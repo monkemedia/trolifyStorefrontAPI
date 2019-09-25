@@ -1,5 +1,6 @@
 const express = require('express')
-const Customer = require('../models/Customers')
+const Customer = require('../models/Customer')
+const auth = require('../middleware/auth')
 const router = express.Router()
 
 router.post('/customers', async (req, res) => {
@@ -18,19 +19,24 @@ router.post('/customers/login', async (req, res) => {
   // Login a registerd customer
   try {
     const { email, password } = req.body
-    const ucustomer = await Customer.findByCredentials(email, password)
+    const customer = await Customer.findByCredentials(email, password)
 
-    if (!ucustomer) {
+    if (!customer) {
       return res.status(401).send({
         error: 'Login failed! Check authentication credentials'
       })
     }
 
-    const token = await ucustomer.generateAuthToken()
-    res.send({ ucustomer, token })
+    const token = await customer.generateAuthToken()
+    res.send({ customer, token })
   } catch (err) {
     res.status(400).send(err)
   }
+})
+
+router.get('/customers/me', auth, async(req, res) => {
+  // View logged in customer profile
+  res.send(req.customer)
 })
 
 module.exports = router
