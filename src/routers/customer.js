@@ -6,16 +6,34 @@ const router = express.Router()
 router.post('/customers', async (req, res) => {
   // Create a new customer
   try {
+    // Check to see if customer already exists
+    const customerExists = await Customer.findByEmail(req.body.email)
+
+    if (customerExists) {
+      return res.status(401).send({
+        error: 'Customer already exists'
+      })
+    }
+
     const customer = new Customer(req.body)
+    
     await customer.save()
-    const token = await customer.generateAuthToken()
-    res.status(201).send({ customer, token })
+
+    const { _id, name, email, password } = customer
+
+    res.status(201).send({
+      type: 'customer',
+      _id,
+      name,
+      email,
+      password: password ? true : false
+    })
   } catch (err) {
     res.status(400).send(err)
   }
 })
 
-router.post('/customers/login', async (req, res) => {
+router.post('/customers/token', async (req, res) => {
   // Login a registerd customer
   try {
     const { email, password } = req.body
@@ -28,15 +46,26 @@ router.post('/customers/login', async (req, res) => {
     }
 
     const token = await customer.generateAuthToken()
-    res.send({ customer, token })
+    res.send({
+      type: 'token',
+      customer_id: customer._id,
+      token: token
+    })
   } catch (err) {
     res.status(400).send(err)
   }
 })
 
-router.get('/customers/me', auth, async(req, res) => {
+router.get('/customers/:id', auth, async(req, res) => {
   // View logged in customer profile
-  res.send(req.customer)
+  const { _id, name, email, password } = req.customer
+  res.status(201).send({
+    type: 'customer',
+    _id,
+    name,
+    email,
+    password: password ? true : false
+  })
 })
 
 module.exports = router

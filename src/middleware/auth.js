@@ -3,13 +3,15 @@ const Customer = require('../models/Customer')
 
 const auth = async (req, res, next) => {
   const token = req.header('Authorization').replace('Bearer ', '')
-  const data = jwt.verify(token, process.env.JWT_KEY)
 
   try {
-    const customer = await Customer.findOne({ _id: data._id, 'tokens.token': token })
+    await jwt.verify(token, process.env.JWT_KEY)
+    const customer = await Customer.findOne({ _id: req.params.id })
 
     if (!customer) {
-      throw new Error()
+      throw new Error({
+        error: 'Customer doesn`t exist'
+      })
     }
 
     req.customer = customer
@@ -17,7 +19,7 @@ const auth = async (req, res, next) => {
     next()
   } catch (err) {
     res.status(401).send({
-      error: 'Not authorized to access this resource'
+      error: 'Token has expired'
     })
   }
 }

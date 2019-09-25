@@ -26,13 +26,7 @@ const customerSchema = mongoose.Schema({
     type: String,
     required: true,
     minLength: 8
-  },
-  tokens: [{
-    token: {
-      type: String,
-      required: true
-    }
-  }]
+  }
 })
 
 customerSchema.pre('save', async function (next) {
@@ -49,12 +43,15 @@ customerSchema.methods.generateAuthToken = async function () {
   const customer = this
   const token = jwt.sign({
     _id: customer._id
-  }, process.env.JWT_KEY)
-
-  customer.tokens = customer.tokens.concat({ token })
-  await customer.save()
+  }, process.env.JWT_KEY, { expiresIn: 60 })
 
   return token
+}
+
+customerSchema.statics.findByEmail = async (email) => {
+  // Search for a customer by email address
+ const customer = await Customer.findOne({ email })
+ return customer
 }
 
 customerSchema.statics.findByCredentials = async (email, password) => {
