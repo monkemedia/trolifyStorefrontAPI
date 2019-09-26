@@ -18,7 +18,7 @@ const customerSchema = mongoose.Schema({
     validate: value => {
       if (!validator.isEmail(value)) {
         throw new Error({
-          error: 'Invalid email address'
+          message: 'Invalid email address'
         })
       }
     }
@@ -45,7 +45,7 @@ customerSchema.methods.generateAuthToken = async function () {
   const customer = this
   const token = jwt.sign({
     _id: customer._id
-  }, process.env.JWT_KEY, { expiresIn: 60 })
+  }, process.env.JWT_KEY, { expiresIn: '1h' })
 
   return token
 }

@@ -8,6 +8,5 @@ module.exports = (statusCode, message) => {
   //   statusCode = error.response.status
   //   message = error.response.data.error
   // }
-
   return httpError(statusCode, message)
 }
