@@ -75,6 +75,19 @@ customerSchema.statics.findByCredentials = async (email, password) => {
   return customer
 }
 
+customerSchema.statics.deleteById = async (_id) => {
+  // Search for a customer by email address
+ const customer = await Customer.deleteOne({ _id })
+ return customer
+}
+
+customerSchema.statics.updateById = async (customerDetails) => {
+  const { _id, name, email, password } = customerDetails
+  // Search for a customer by email address
+ const customer = await Customer.updateOne({ _id }, { name, email, password })
+ return customer
+}
+
 const Customer = mongoose.model('Customer', customerSchema)
 
 module.exports = Customer
