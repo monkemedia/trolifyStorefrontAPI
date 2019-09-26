@@ -6,11 +6,22 @@ const router = express.Router()
 // Create a new address
 router.post('/customers/:id/addresses', auth, async (req, res) => {
   try {
-    const address = new Address({ ...req.body, customer_id: req.params.id })
+    const addresses = new Address({ ...req.body, customer_id: req.params.id })
 
-    await address.save()
+    await addresses.save()
 
-    res.status(201).send(address)
+    res.status(201).send(addresses)
+  } catch (err) {
+    res.status(400).send(err)
+  }
+})
+
+// Get all addresses
+router.get('/customers/:id/addresses', auth, async (req, res) => {
+  try {
+    const addresses = await Address.findAll(req.params.id)
+
+    res.status(201).send(addresses)
   } catch (err) {
     res.status(400).send(err)
   }

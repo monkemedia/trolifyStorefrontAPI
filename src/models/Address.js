@@ -56,9 +56,11 @@ const addressSchema = mongoose.Schema({
   }
 })
 
-addressSchema.pre('save', async function (next) {
-  next()
-})
+addressSchema.statics.findAll = async (customerId) => {
+  // Find all addresses by customer id
+  const addresses = await Address.find({ customer_id: customerId })
+  return addresses
+}
 
 const Address = mongoose.model('Address', addressSchema)
 
