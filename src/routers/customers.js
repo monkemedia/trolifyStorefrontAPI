@@ -83,24 +83,20 @@ router.get('/customers/:customerId', auth, async (req, res) => {
 
 // Update customer
 router.put('/customers/:customerId', auth, async (req, res) => {
+  const _id = req.params.customerId
   const currentCustomerDetails = req.customer
   const { name, email, password } = req.body
+  const data = {
+    _id,
+    name: name || currentCustomerDetails.name,
+    email: email || currentCustomerDetails.email,
+    password: password || currentCustomerDetails.password
+  }
 
   try {
-    await Customer.updateCustomer({
-      _id: currentCustomerDetails._id,
-      name: name || currentCustomerDetails.name,
-      email: email || currentCustomerDetails.email,
-      password: password || currentCustomerDetails.password
-    })
+    await Customer.updateCustomer(data)
 
-    res.status(201).send({
-      type: 'customer',
-      _id: currentCustomerDetails._id,
-      name: name || currentCustomerDetails.name,
-      email: email || currentCustomerDetails.email,
-      password: !!(password || currentCustomerDetails.password)
-    })
+    res.status(201).send(data)
   } catch (err) {
     res.status(400).send(err)
   }
