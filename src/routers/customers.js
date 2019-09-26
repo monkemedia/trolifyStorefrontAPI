@@ -12,25 +12,25 @@ router.post('/customers', async (req, res) => {
 
     if (!name) {
       return res.status(401).send({
-        error: 'Name is required'
+        message: 'Name is required'
       })
     }
 
     if (!email) {
       return res.status(401).send({
-        error: 'Email is required'
+        message: 'Email is required'
       })
     }
 
     if (!password) {
       return res.status(401).send({
-        error: 'Password is required'
+        message: 'Password is required'
       })
     }
 
     if (customerExists) {
       return res.status(401).send({
-        error: 'Customer already exists'
+        message: 'Customer already exists'
       })
     }
 
