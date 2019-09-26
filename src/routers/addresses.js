@@ -19,7 +19,7 @@ router.post('/customers/:customerId/addresses', auth, async (req, res) => {
 // Get all addresses
 router.get('/customers/:customerId/addresses', auth, async (req, res) => {
   try {
-    const addresses = await Address.findAll(req.params.customerId)
+    const addresses = await Address.findAllAddresses(req.params.customerId)
 
     res.status(201).send(addresses)
   } catch (err) {
@@ -33,6 +33,19 @@ router.get('/customers/:customerId/addresses/:addressId', auth, async (req, res)
     const addresses = await Address.findAddress(req.params.addressId)
 
     res.status(201).send(addresses)
+  } catch (err) {
+    res.status(400).send(err)
+  }
+})
+
+// Delete an address
+router.delete('/customers/:customerId/addresses/:addressId', auth, async (req, res) => {
+  try {
+    const addresses = await Address.deleteAddress(req.params.addressId)
+
+    res.status(201).send({
+      message: 'Address successfully deleted'
+    })
   } catch (err) {
     res.status(400).send(err)
   }

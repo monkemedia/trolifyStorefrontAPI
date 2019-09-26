@@ -56,7 +56,7 @@ const addressSchema = mongoose.Schema({
   }
 })
 
-addressSchema.statics.findAll = async (customerId) => {
+addressSchema.statics.findAllAddresses = async (customerId) => {
   // Find all addresses by customer id
   const addresses = await Address.find({ customer_id: customerId })
   return addresses
@@ -66,6 +66,12 @@ addressSchema.statics.findAddress = async (addressId) => {
   // Find all addresses by customer id
   const addresses = await Address.find({ _id: addressId })
   return addresses
+}
+
+addressSchema.statics.deleteAddress = async (addressId) => {
+  // Find all addresses by customer id
+  const address = await Address.deleteOne({ _id: addressId })
+  return address
 }
 
 const Address = mongoose.model('Address', addressSchema)

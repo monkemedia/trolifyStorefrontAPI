@@ -87,7 +87,7 @@ router.put('/customers/:customerId', auth, async (req, res) => {
   const { name, email, password } = req.body
 
   try {
-    await Customer.updateById({
+    await Customer.updateCustomer({
       _id: currentCustomerDetails._id,
       name: name || currentCustomerDetails.name,
       email: email || currentCustomerDetails.email,
@@ -109,7 +109,7 @@ router.put('/customers/:customerId', auth, async (req, res) => {
 // Delete customer
 router.delete('/customers/:customerId', auth, async (req, res) => {
   try {
-    await Customer.deleteById(req.params.customerId)
+    await Customer.deleteCustomer(req.params.customerId)
 
     res.status(201).send({
       message: 'Customer successfully deleted'
