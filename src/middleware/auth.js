@@ -2,7 +2,15 @@ const jwt = require('jsonwebtoken')
 const Customer = require('../models/Customer')
 
 const auth = async (req, res, next) => {
-  const token = req.header('Authorization').replace('Bearer ', '')
+  let token = req.header('Authorization')
+
+  if (!token) {
+    res.status(401).send({
+      error: 'Token is required'
+    })
+  }
+
+  token = token.replace('Bearer ', '')
 
   try {
     await jwt.verify(token, process.env.JWT_KEY)
