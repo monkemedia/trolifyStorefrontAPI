@@ -6,8 +6,7 @@ const router = express.Router()
 // Create a new address
 router.post('/customers/:id/addresses', auth, async (req, res) => {
   try {
-
-    const address = new Address({...req.body, customer_id: req.params.id })
+    const address = new Address({ ...req.body, customer_id: req.params.id })
 
     await address.save()
 

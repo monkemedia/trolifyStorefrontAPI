@@ -1,8 +1,7 @@
 module.exports = {
   env: {
-    browser: true,
-    commonjs: true,
-    es6: true
+    node: true,
+    commonjs: true
   },
   extends: [
     'standard'
@@ -12,7 +11,7 @@ module.exports = {
     SharedArrayBuffer: 'readonly'
   },
   parserOptions: {
-    ecmaVersion: 2017
+    ecmaVersion: 2018
   },
   rules: {
   }
