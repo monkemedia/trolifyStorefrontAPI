@@ -35,7 +35,7 @@ router.post('/customers', async (req, res) => {
     }
 
     const customer = new Customer(req.body)
-    
+
     await customer.save()
 
     const { _id } = customer
@@ -45,7 +45,7 @@ router.post('/customers', async (req, res) => {
       _id,
       name,
       email,
-      password: password ? true : false
+      password: !!password
     })
   } catch (err) {
     res.status(400).send(err)
@@ -70,24 +70,24 @@ router.post('/customers/token', async (req, res) => {
 })
 
 // Get customer details
-router.get('/customers/:id', auth, async(req, res) => {
+router.get('/customers/:id', auth, async (req, res) => {
   const { _id, name, email, password } = req.customer
   res.status(201).send({
     type: 'customer',
     _id,
     name,
     email,
-    password: password ? true : false
+    password: !!password
   })
 })
 
 // Update customer
-router.put('/customers/:id', auth, async(req, res) => {
+router.put('/customers/:id', auth, async (req, res) => {
   const currentCustomerDetails = req.customer
   const { name, email, password } = req.body
 
   try {
-    const customer = await Customer.updateById({
+    await Customer.updateById({
       _id: currentCustomerDetails._id,
       name: name || currentCustomerDetails.name,
       email: email || currentCustomerDetails.email,
@@ -99,7 +99,7 @@ router.put('/customers/:id', auth, async(req, res) => {
       _id: currentCustomerDetails._id,
       name: name || currentCustomerDetails.name,
       email: email || currentCustomerDetails.email,
-      password: password || currentCustomerDetails.password ? true : false
+      password: !!(password || currentCustomerDetails.password)
     })
   } catch (err) {
     res.status(400).send(err)
@@ -107,7 +107,7 @@ router.put('/customers/:id', auth, async(req, res) => {
 })
 
 // Delete customer
-router.delete('/customers/:id', auth, async(req, res) => {
+router.delete('/customers/:id', auth, async (req, res) => {
   try {
     await Customer.deleteById(req.params.id)
 
