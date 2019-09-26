@@ -62,6 +62,12 @@ addressSchema.statics.findAll = async (customerId) => {
   return addresses
 }
 
+addressSchema.statics.findAddress = async (addressId) => {
+  // Find all addresses by customer id
+  const addresses = await Address.find({ _id: addressId })
+  return addresses
+}
+
 const Address = mongoose.model('Address', addressSchema)
 
 module.exports = Address

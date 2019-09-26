@@ -30,7 +30,7 @@ router.get('/customers/:customerId/addresses', auth, async (req, res) => {
 // Get an address
 router.get('/customers/:customerId/addresses/:addressId', auth, async (req, res) => {
   try {
-    const addresses = await Address.findAll(req.params.addressId)
+    const addresses = await Address.findAddress(req.params.addressId)
 
     res.status(201).send(addresses)
   } catch (err) {
