@@ -70,7 +70,7 @@ router.post('/customers/token', async (req, res) => {
 })
 
 // Get customer details
-router.get('/customers/:id', auth, async (req, res) => {
+router.get('/customers/:customerId', auth, async (req, res) => {
   const { _id, name, email, password } = req.customer
   res.status(201).send({
     type: 'customer',
@@ -82,7 +82,7 @@ router.get('/customers/:id', auth, async (req, res) => {
 })
 
 // Update customer
-router.put('/customers/:id', auth, async (req, res) => {
+router.put('/customers/:customerId', auth, async (req, res) => {
   const currentCustomerDetails = req.customer
   const { name, email, password } = req.body
 
@@ -107,9 +107,9 @@ router.put('/customers/:id', auth, async (req, res) => {
 })
 
 // Delete customer
-router.delete('/customers/:id', auth, async (req, res) => {
+router.delete('/customers/:customerId', auth, async (req, res) => {
   try {
-    await Customer.deleteById(req.params.id)
+    await Customer.deleteById(req.params.customerId)
 
     res.status(201).send({
       message: 'Customer successfully deleted'

@@ -13,7 +13,7 @@ const auth = async (req, res, next) => {
 
   try {
     await jwt.verify(token, process.env.JWT_KEY)
-    const customer = await Customer.findOne({ _id: req.params.id })
+    const customer = await Customer.findOne({ _id: req.params.customerId })
 
     if (!customer) {
       throw errorHandler(422, 'Customer does\'t exists')

@@ -4,9 +4,9 @@ const auth = require('../middleware/auth')
 const router = express.Router()
 
 // Create a new address
-router.post('/customers/:id/addresses', auth, async (req, res) => {
+router.post('/customers/:customerId/addresses', auth, async (req, res) => {
   try {
-    const addresses = new Address({ ...req.body, customer_id: req.params.id })
+    const addresses = new Address({ ...req.body, customer_id: req.params.customerId })
 
     await addresses.save()
 
@@ -17,9 +17,20 @@ router.post('/customers/:id/addresses', auth, async (req, res) => {
 })
 
 // Get all addresses
-router.get('/customers/:id/addresses', auth, async (req, res) => {
+router.get('/customers/:customerId/addresses', auth, async (req, res) => {
   try {
-    const addresses = await Address.findAll(req.params.id)
+    const addresses = await Address.findAll(req.params.customerId)
+
+    res.status(201).send(addresses)
+  } catch (err) {
+    res.status(400).send(err)
+  }
+})
+
+// Get an address
+router.get('/customers/:customerId/addresses/:addressId', auth, async (req, res) => {
+  try {
+    const addresses = await Address.findAll(req.params.addressId)
 
     res.status(201).send(addresses)
   } catch (err) {
