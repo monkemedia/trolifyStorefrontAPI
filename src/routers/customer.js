@@ -57,21 +57,15 @@ router.post('/customers/token', async (req, res) => {
   try {
     const { email, password } = req.body
     const customer = await Customer.findByCredentials(email, password)
-
-    if (!customer) {
-      return res.status(401).send({
-        error: 'Login failed! Check authentication credentials'
-      })
-    }
-
     const token = await customer.generateAuthToken()
+
     res.send({
       type: 'token',
       customer_id: customer._id,
       token: token
     })
   } catch (err) {
-    res.status(400).send(err)
+    res.status(err.status).send(err)
   }
 })
 

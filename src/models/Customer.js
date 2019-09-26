@@ -43,7 +43,7 @@ customerSchema.methods.generateAuthToken = async function () {
   const customer = this
   const token = jwt.sign({
     _id: customer._id
-  }, process.env.JWT_KEY, { expiresIn: '1h' })
+  }, process.env.JWT_KEY, { expiresIn: 60 })
 
   return token
 }
@@ -59,17 +59,19 @@ customerSchema.statics.findByCredentials = async (email, password) => {
   const customer = await Customer.findOne({ email })
 
   if (!customer) {
-    throw new Error({
-      error: 'Invalid login credentials'
-    })
+    throw {
+      status: 422,
+      message: 'Customer does\'t exists'
+    }
   }
 
   const isPasswordMatch = await bcrypt.compare(password, customer.password)
 
   if (!isPasswordMatch) {
-    throw new Error({
-      error: 'Invalid login credentials'
-    })
+    throw {
+      status: 422,
+      message: 'Invalid login credentials'
+    }
   }
 
   return customer

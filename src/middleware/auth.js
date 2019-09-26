@@ -5,30 +5,37 @@ const auth = async (req, res, next) => {
   let token = req.header('Authorization')
 
   if (!token) {
-    res.status(401).send({
-      error: 'Token is required'
+    return res.status(422).send({
+      status: 422,
+      message: 'Token is required'
     })
   }
 
   token = token.replace('Bearer ', '')
 
   try {
-    await jwt.verify(token, process.env.JWT_KEY)
+    const verify = await jwt.verify(token, process.env.JWT_KEY)
     const customer = await Customer.findOne({ _id: req.params.id })
 
     if (!customer) {
-      throw new Error({
-        error: 'Customer doesn`t exist'
-      })
+      throw {
+        status: 422,
+        message: 'Customer does\'t exists'
+      }
     }
 
     req.customer = customer
     req.token = token
     next()
   } catch (err) {
-    res.status(401).send({
-      error: 'Token has expired'
-    })
+    if (err.message === 'jwt expired') {
+      return res.status(422).send({
+        status: 422,
+        message: 'Token has expired'
+      })
+    }
+
+    res.status(err.status).send(err)
   }
 }
 
