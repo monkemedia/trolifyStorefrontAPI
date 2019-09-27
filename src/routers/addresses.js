@@ -5,6 +5,20 @@ const router = express.Router()
 
 // Create a new address
 router.post('/customers/:customerId/addresses', auth, async (req, res) => {
+  const { type } = req.body
+
+  if (!type) {
+    return res.status(401).send({
+      message: 'Type is required'
+    })
+  }
+
+  if (type && type !== 'address') {
+    return res.status(401).send({
+      message: 'Correct Type is required'
+    })
+  }
+
   try {
     const addresses = new Address({ ...req.body, customer_id: req.params.customerId })
 
@@ -41,11 +55,25 @@ router.get('/customers/:customerId/addresses/:addressId', auth, async (req, res)
 // Update can address
 router.put('/customers/:customerId/addresses/:addressId', auth, async (req, res) => {
   const _id = req.params.addressId
+  const { type } = req.body
+
+  if (!type) {
+    return res.status(401).send({
+      message: 'Type is required'
+    })
+  }
+
+  if (type && type !== 'address') {
+    return res.status(401).send({
+      message: 'Correct Type is required'
+    })
+  }
 
   try {
     const currentAddress = await Address.findAddress(req.params.addressId)
 
     const data = {
+      type,
       _id,
       first_name: req.body.first_name || currentAddress.first_name,
       last_name: req.body.last_name || currentAddress.last_name,
