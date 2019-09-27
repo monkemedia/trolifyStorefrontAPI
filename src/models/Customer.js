@@ -5,6 +5,17 @@ const jwt = require('jsonwebtoken')
 const errorHandler = require('../utils/errorHandler')
 
 const customerSchema = mongoose.Schema({
+  type: {
+    type: String,
+    required: true
+    // validate: value => {
+    //   if (!validator.equals('token')) {
+    //     if (!validator.isEmail(value)) {
+    //       throw errorHandler(422, 'Invalid Type')
+    //     }
+    //   }
+    // }
+  },
   name: {
     type: String,
     required: true,
@@ -17,9 +28,7 @@ const customerSchema = mongoose.Schema({
     lowercase: true,
     validate: value => {
       if (!validator.isEmail(value)) {
-        throw new Error({
-          message: 'Invalid email address'
-        })
+        throw errorHandler(422, 'Invalid email address')
       }
     }
   },
@@ -40,12 +49,12 @@ customerSchema.pre('save', async function (next) {
   next()
 })
 
-customerSchema.methods.generateAuthToken = async function () {
+customerSchema.methods.generateCustomerAuthToken = async function () {
   // Genrate an auth token for customer
   const customer = this
   const token = jwt.sign({
     _id: customer._id
-  }, process.env.JWT_KEY, { expiresIn: '1h' })
+  }, process.env.CLIENT_ID, { expiresIn: '1h' })
 
   return token
 }
