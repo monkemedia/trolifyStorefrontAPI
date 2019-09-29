@@ -68,16 +68,16 @@ addressSchema.statics.findAddress = async (addressId) => {
   return addresses
 }
 
-// Find all addresses by customer id
-addressSchema.statics.deleteAddress = async (addressId) => {
-  const address = await Address.deleteOne({ _id: addressId })
-  return address
-}
-
-// Search for a customer by email address
+// Update address
 addressSchema.statics.updateAddress = async (addressDetails) => {
   const { _id } = addressDetails
   const address = await Address.updateOne({ _id }, addressDetails)
+  return address
+}
+
+// Delete address
+addressSchema.statics.deleteAddress = async (addressId) => {
+  const address = await Address.deleteOne({ _id: addressId })
   return address
 }
 

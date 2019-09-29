@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const Customer = require('../models/Customer')
+// const Customer = require('../models/Customer')
 const errorHandler = require('../utils/errorHandler')
 
 const auth = async (req, res, next) => {
@@ -14,11 +14,11 @@ const auth = async (req, res, next) => {
   try {
     await jwt.verify(token, process.env.CLIENT_SECRET)
 
-    const customer = await Customer.findOne({ _id: req.params.customerId })
+    // const customer = await Customer.findOne({ _id: req.params.customerId })
 
-    if (!customer) {
-      throw errorHandler(422, 'Customer does\'t exists')
-    }
+    // if (!customer) {
+    //   throw errorHandler(422, 'Customer does\'t exists')
+    // }
     next()
   } catch (err) {
     if (err.message === 'jwt expired') {
