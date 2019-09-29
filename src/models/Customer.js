@@ -8,13 +8,6 @@ const customerSchema = mongoose.Schema({
   type: {
     type: String,
     required: true
-    // validate: value => {
-    //   if (!validator.equals('token')) {
-    //     if (!validator.isEmail(value)) {
-    //       throw errorHandler(422, 'Invalid Type')
-    //     }
-    //   }
-    // }
   },
   name: {
     type: String,
@@ -49,14 +42,21 @@ customerSchema.pre('save', async function (next) {
   next()
 })
 
-customerSchema.methods.generateCustomerAuthToken = async function () {
+customerSchema.methods.generateAccessToken = async function () {
   // Genrate an auth token for customer
   const customer = this
-  const token = jwt.sign({
+  const accessToken = jwt.sign({
     _id: customer._id
-  }, process.env.CLIENT_ID, { expiresIn: '1h' })
+  }, process.env.CLIENT_SECRET, { expiresIn: '1h' })
 
-  return token
+  return accessToken
+}
+
+customerSchema.statics.getAll = async (email) => {
+  // Search for a customer by email address
+  const customers = await Customer.find({})
+
+  return customers
 }
 
 customerSchema.statics.findByEmail = async (email) => {

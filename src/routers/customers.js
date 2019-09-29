@@ -4,7 +4,7 @@ const auth = require('../middleware/auth')
 const router = express.Router()
 
 // Get token
-router.post('/customers/token', async (req, res) => {
+router.post('/customers/access_token', async (req, res) => {
   try {
     const { email, password, type } = req.body
 
@@ -33,12 +33,12 @@ router.post('/customers/token', async (req, res) => {
     }
 
     const customer = await Customer.findByCredentials(email, password)
-    const token = await customer.generateCustomerAuthToken()
+    const accessToken = await customer.generateAccessToken()
 
     res.send({
-      type: 'token',
+      grant_type: 'implicit',
       customer_id: customer._id,
-      token: token
+      access_token: accessToken
     })
   } catch (err) {
     res.status(err.status).send(err)
@@ -106,19 +106,37 @@ router.post('/customers', async (req, res) => {
   }
 })
 
-// Get customer details
+// Get all customer
+// router.get('/customers', auth, async (req, res) => {
+//   try {
+//     const customers = await Customer.getAll()
+
+//     const newCustomers = customers.map(customer => Object.assign(customer, {
+//       password: !!customer.password
+//     }))
+
+//     res.status(201).send(newCustomers)
+//   } catch (err) {
+//     res.status(400).send(err)
+//   }
+
+//   // res.status(201).send(customer)
+// })
+
+// Get customer
 router.get('/customers/:customerId', auth, async (req, res) => {
-  const customer = Object.assign(req.customer, {
-    password: !!req.customer.password
+  const customer = await Customer.findOne({ _id: req.params.customerId })
+  const customerClone = Object.assign(customer, {
+    password: !!customer.password
   })
 
-  res.status(201).send(customer)
+  res.status(201).send(customerClone)
 })
 
 // Update customer
 router.put('/customers/:customerId', auth, async (req, res) => {
   const _id = req.params.customerId
-  const currentCustomerDetails = req.customer
+  const currentCustomerDetails = await Customer.findOne({ _id: req.params.customerId })
   const { type, name, email, password } = req.body
 
   if (!type) {
