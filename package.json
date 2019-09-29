@@ -1,7 +1,7 @@
 {
-  "name": "ecommerce-api",
+  "name": "troli-api",
   "version": "1.0.0",
-  "description": "A api for ecommerce-template",
+  "description": "An API for Troli",
   "scripts": {
     "test": "npm run test",
     "start": "env-cmd -f ./.env nodemon src/app.js"
