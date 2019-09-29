@@ -42,11 +42,11 @@ customerSchema.pre('save', async function (next) {
   next()
 })
 
-// Genrate an auth token for customer
+// Generate an auth token for customer
 customerSchema.methods.generateAccessToken = async function () {
   const customer = this
   const accessToken = jwt.sign({
-    _id: customer._id
+    customer_id: customer._id
   }, process.env.CLIENT_SECRET, { expiresIn: '1h' })
 
   return accessToken
