@@ -56,27 +56,27 @@ const addressSchema = mongoose.Schema({
   }
 })
 
+// Find all addresses by customer id
 addressSchema.statics.findAllAddresses = async (customerId) => {
-  // Find all addresses by customer id
   const addresses = await Address.find({ customer_id: customerId })
   return addresses
 }
 
+// Find all addresses by customer id
 addressSchema.statics.findAddress = async (addressId) => {
-  // Find all addresses by customer id
   const addresses = await Address.findOne({ _id: addressId })
   return addresses
 }
 
+// Find all addresses by customer id
 addressSchema.statics.deleteAddress = async (addressId) => {
-  // Find all addresses by customer id
   const address = await Address.deleteOne({ _id: addressId })
   return address
 }
 
+// Search for a customer by email address
 addressSchema.statics.updateAddress = async (addressDetails) => {
   const { _id } = addressDetails
-  // Search for a customer by email address
   const address = await Address.updateOne({ _id }, addressDetails)
   return address
 }

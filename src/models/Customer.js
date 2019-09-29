@@ -32,8 +32,8 @@ const customerSchema = mongoose.Schema({
   }
 })
 
+// Hash the password before saving the customer model
 customerSchema.pre('save', async function (next) {
-  // Hash the password before saving the customer model
   const customer = this
 
   if (customer.isModified('password')) {
@@ -42,8 +42,8 @@ customerSchema.pre('save', async function (next) {
   next()
 })
 
+// Genrate an auth token for customer
 customerSchema.methods.generateAccessToken = async function () {
-  // Genrate an auth token for customer
   const customer = this
   const accessToken = jwt.sign({
     _id: customer._id
@@ -52,22 +52,22 @@ customerSchema.methods.generateAccessToken = async function () {
   return accessToken
 }
 
+// Search for a customer by email address
 customerSchema.statics.getAll = async (email) => {
-  // Search for a customer by email address
   const customers = await Customer.find({})
 
   return customers
 }
 
+// Search for a customer by email address
 customerSchema.statics.findByEmail = async (email) => {
-  // Search for a customer by email address
   const customer = await Customer.findOne({ email })
 
   return customer
 }
 
+// Search for a customer by email and password
 customerSchema.statics.findByCredentials = async (email, password) => {
-  // Search for a customer by email and password
   const customer = await Customer.findOne({ email })
 
   if (!customer) {
@@ -83,15 +83,15 @@ customerSchema.statics.findByCredentials = async (email, password) => {
   return customer
 }
 
+// Search for a customer by email address
 customerSchema.statics.deleteCustomer = async (_id) => {
-  // Search for a customer by email address
   const customer = await Customer.deleteOne({ _id })
   return customer
 }
 
+// Search for a customer by email address
 customerSchema.statics.updateCustomer = async (customerDetails) => {
   const { _id, name, email, password } = customerDetails
-  // Search for a customer by email address
   const customer = await Customer.updateOne({ _id }, { name, email, password })
   return customer
 }

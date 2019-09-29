@@ -106,23 +106,6 @@ router.post('/customers', async (req, res) => {
   }
 })
 
-// Get all customer
-// router.get('/customers', auth, async (req, res) => {
-//   try {
-//     const customers = await Customer.getAll()
-
-//     const newCustomers = customers.map(customer => Object.assign(customer, {
-//       password: !!customer.password
-//     }))
-
-//     res.status(201).send(newCustomers)
-//   } catch (err) {
-//     res.status(400).send(err)
-//   }
-
-//   // res.status(201).send(customer)
-// })
-
 // Get customer
 router.get('/customers/:customerId', auth, async (req, res) => {
   const customer = await Customer.findOne({ _id: req.params.customerId })
