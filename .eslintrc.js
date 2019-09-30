@@ -1,6 +1,7 @@
 module.exports = {
   env: {
     node: true,
+    es6: true,
     commonjs: true
   },
   extends: [
@@ -12,5 +13,8 @@ module.exports = {
   },
   parserOptions: {
     ecmaVersion: 2018
+  },
+  rules: {
+    'camelcase': 'off'
   }
 }

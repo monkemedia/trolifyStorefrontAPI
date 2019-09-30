@@ -91,7 +91,7 @@ router.get('/customers/:customerId/addresses/:addressId', auth, async (req, res)
 // Update can address
 router.put('/customers/:customerId/addresses/:addressId', auth, async (req, res) => {
   const _id = req.params.addressId
-  const { type } = req.body
+  const { type, first_name, last_name, company_name, line_1, line_2, city, county, postcode, country, phone_number, instructions } = req.body
 
   if (!type) {
     return res.status(401).send({
