@@ -35,7 +35,7 @@ router.post('/customers/access_token', async (req, res) => {
     const customer = await Customer.findByCredentials(email, password)
     const accessToken = await customer.generateAccessToken()
 
-    res.send({
+    res.status(200).send({
       grant_type: 'implicit',
       customer_id: customer._id,
       access_token: accessToken
@@ -113,7 +113,7 @@ router.get('/customers/:customerId', auth, async (req, res) => {
     password: !!customer.password
   })
 
-  res.status(201).send(customerClone)
+  res.status(200).send(customerClone)
 })
 
 // Update customer
@@ -156,7 +156,7 @@ router.delete('/customers/:customerId', auth, async (req, res) => {
   try {
     await Customer.deleteCustomer(req.params.customerId)
 
-    res.status(201).send({
+    res.status(204).send({
       message: 'Customer successfully deleted'
     })
   } catch (err) {
