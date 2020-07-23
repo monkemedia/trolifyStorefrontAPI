@@ -22,4 +22,26 @@ const auth = async (req, res, next) => {
   }
 }
 
-module.exports = auth
+const customerAuth = async (req, res, next) => {
+  const token = req.header('X-Trolify-Customer-Token')
+
+  if (!token) {
+    return res.status(422).send(errorHandler(422, 'Customer token is required'))
+  }
+
+  try {
+    jwt.verify(token, process.env.SECRET_KEY)
+    next()
+  } catch (err) {
+    if (err.message === 'jwt expired') {
+      return res.status(422).send(errorHandler(422, 'Customer token has expired'))
+    }
+
+    res.status(err.status).send(err)
+  }
+}
+
+module.exports = {
+  auth,
+  customerAuth
+}
