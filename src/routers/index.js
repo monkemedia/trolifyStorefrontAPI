@@ -1,11 +1,11 @@
 const { Router } = require('express')
-const customers = require('./customers.js')
-const addresses = require('./addresses.js')
+const categories = require('./categories.js')
+const products = require('./products.js')
 const router = Router()
 
 router.use(
-  customers,
-  addresses
+  categories,
+  products
 )
 
 module.exports = router
