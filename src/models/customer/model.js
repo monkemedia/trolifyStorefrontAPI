@@ -28,7 +28,7 @@ customerSchema.methods.generateToken = async function (expiresIn) {
   const customer = this
   const accessToken = jwt.sign({
     _id: customer._id
-  }, process.env.SECRET_KEY, { expiresIn: expiresIn || '1hr' })
+  }, process.env.SECRET_KEY, { expiresIn: expiresIn || '24hrs' })
 
   return accessToken
 }

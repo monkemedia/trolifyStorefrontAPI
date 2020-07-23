@@ -2,8 +2,6 @@ const jwt = require('jsonwebtoken')
 const Customer = require('../../models/customer')
 const emailTemplate = require('../../utils/emailTemplate')
 
-const tokenTime = '1hr'
-
 const createCustomer = async (req, res) => {
   try {
     // Check to see if customer already exists
@@ -98,7 +96,7 @@ const getCustomerTokens = async (req, res) => {
     }
 
     const customer = await Customer.findByCredentials(email)
-    const customerToken = await customer.generateToken(tokenTime)
+    const customerToken = await customer.generateToken('24hrs')
 
     await customer.save()
 
@@ -106,7 +104,7 @@ const getCustomerTokens = async (req, res) => {
       type: 'token',
       customer_id: customer._id,
       token: customerToken,
-      expires: Math.floor(Date.now() / 1000) + (60 * 60)
+      expires: Math.floor(Date.now() / 1000) + (60 * 60 * 24)
     })
   } catch (err) {
     console.log('ERROR', err)
