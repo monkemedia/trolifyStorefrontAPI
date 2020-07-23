@@ -23,6 +23,18 @@ cartSchema.statics.findCart = async ({ page, limit }) => {
   }
 }
 
+// Update cart
+cartSchema.statics.updateCart = async (cartId, data) => {
+  const cart = await Cart.updateOne({ _id: cartId }, data)
+  return cart
+}
+
+// Delete cart
+cartSchema.statics.deleteCart = async (cartId) => {
+  const cart = await Cart.deleteOne({ _id: cartId })
+  return cart
+}
+
 const Cart = mongoose.model('Cart', cartSchema)
 
 module.exports = Cart
