@@ -59,16 +59,13 @@ const cartSchema = new Schema({
     type: String
   },
   currency_code: {
-    type: String,
-    default: 'GBP'
+    type: String
   },
   order_is_digital: {
-    type: Boolean,
-    default: false
+    type: Boolean
   },
   is_email_opt_in: {
-    type: Boolean,
-    default: false
+    type: Boolean
   },
   billing_address: {
     first_name: {
