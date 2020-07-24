@@ -12,7 +12,7 @@ const createCart = async (req, res) => {
 
   if (type && type !== 'carts') {
     return res.status(401).send({
-      message: 'Correct Type is required'
+      message: 'Correct type is required'
     })
   }
 
@@ -41,7 +41,7 @@ const getCart = async (req, res) => {
 const updateCart = async (req, res) => {
   const cartId = req.params.cartId
   const data = req.body
-  const { type } = data
+  const { type, cart_state } = data
 
   if (!type) {
     return res.status(401).send({
@@ -52,6 +52,12 @@ const updateCart = async (req, res) => {
   if (type !== 'carts') {
     return res.status(401).send({
       message: 'Correct type is required'
+    })
+  }
+
+  if (cart_state !== 'ordered') {
+    return res.status(401).send({
+      message: 'The cart has been ordered. No further operations are allowed'
     })
   }
 

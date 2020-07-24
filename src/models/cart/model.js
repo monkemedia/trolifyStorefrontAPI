@@ -5,6 +5,7 @@ const cartSchema = require('./schema')
 cartSchema.statics.findCart = async ({ page, limit }) => {
   const cart = await Cart
     .find({})
+    .select('expireAt')
     .skip((page - 1) * limit)
     .limit(limit)
 
@@ -25,7 +26,10 @@ cartSchema.statics.findCart = async ({ page, limit }) => {
 
 // Update cart
 cartSchema.statics.updateCart = async (cartId, data) => {
-  const cart = await Cart.updateOne({ _id: cartId }, data)
+  const cart = await Cart.updateOne({ _id: cartId }, {
+    ...data,
+    updated_at: Date.now()
+  })
   return cart
 }
 
