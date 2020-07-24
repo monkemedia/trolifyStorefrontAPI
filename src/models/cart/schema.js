@@ -37,9 +37,6 @@ const cartSchema = new Schema({
       type: String
     }
   },
-  coupon_amount: {
-    type: Number
-  },
   subtotal_exc_tax: {
     type: Number
   },
