@@ -7,6 +7,7 @@ const customerAddresses = require('./customers/addresses/index.js')
 const customerCoupons = require('./customers/coupons/index.js')
 const customerWishlists = require('./customers/wishlists/index.js')
 const products = require('./products.js')
+const orders = require('./orders/index.js')
 const router = Router()
 
 router.use(
@@ -17,7 +18,8 @@ router.use(
   customerCoupons,
   customerWishlists,
   categories,
-  products
+  products,
+  orders
 )
 
 module.exports = router
