@@ -29,6 +29,7 @@
     "mongoose-sequence": "^5.2.2",
     "nodemon": "^2.0.4",
     "postmark": "^2.5.4",
+    "stripe": "^8.79.0",
     "validator": "^11.1.0"
   },
   "devDependencies": {
