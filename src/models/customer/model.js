@@ -35,7 +35,10 @@ customerSchema.methods.generateToken = async function (expiresIn) {
 
 // Find customer by email address
 customerSchema.statics.findByCredentials = async (email) => {
-  const customer = await Customer.findOne({ email }).select('-password')
+  const customer = await Customer
+    .findOne({ email })
+    .populate('addresses')
+    .select('-password')
 
   return customer
 }
@@ -45,7 +48,9 @@ customerSchema.statics.verifyToken = async (verify_token) => {
   const customer = await Customer.updateOne({ verify_token }, {
     verified: true,
     verify_token: null
-  }).select('-password')
+  })
+    .populate('addresses')
+    .select('-password')
   return customer
 }
 

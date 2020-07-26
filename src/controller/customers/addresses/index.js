@@ -1,3 +1,4 @@
+const Customer = require('../../../models/customer')
 const CustomerAddress = require('../../../models/customer/address')
 
 const createCustomerAddress = async (req, res) => {
@@ -12,7 +13,7 @@ const createCustomerAddress = async (req, res) => {
     postcode,
     country_code
   } = data
-  const customer_id = req.params.customerId
+  const customerId = req.params.customerId
 
   if (!type) {
     return res.status(401).send({
@@ -69,11 +70,16 @@ const createCustomerAddress = async (req, res) => {
   }
 
   try {
-    const customerAddresses = new CustomerAddress({ ...data, customer_id })
+    const customerAddress = new CustomerAddress({ ...data, customer_id: customerId })
 
-    await customerAddresses.save()
+    await customerAddress.save()
 
-    res.status(201).send(customerAddresses)
+    const customer = await Customer.findById(customerId)
+    customer.addresses.push(customerAddress._id)
+
+    await customer.save()
+
+    res.status(201).send(customerAddress)
   } catch (err) {
     res.status(400).send(err)
   }
@@ -131,6 +137,10 @@ const updateCustomerAddress = async (req, res) => {
 const deleteCustomerAddress = async (req, res) => {
   try {
     const addressId = req.params.addressId
+    const customerId = req.params.customerId
+    const customer = await Customer.findById(customerId)
+
+    customer.addresses.pull(addressId)
     await CustomerAddress.deleteCustomerAddress(addressId)
 
     res.status(200).send({
