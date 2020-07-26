@@ -39,6 +39,12 @@ const customerSchema = new Schema({
       }
     }
   },
+  addresses: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'CustomerAddress'
+    }
+  ],
   password: {
     type: String,
     required: true,

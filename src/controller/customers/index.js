@@ -114,7 +114,10 @@ const getCustomerTokens = async (req, res) => {
 
 const getCustomer = async (req, res) => {
   const customerId = req.params.customerId
-  const customer = await Customer.findOne({ _id: customerId }).select('-password')
+  const customer = await Customer
+    .findOne({ _id: customerId })
+    .populate('addresses')
+    .select('-password')
 
   res.status(200).send(customer)
 }
