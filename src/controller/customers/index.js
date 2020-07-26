@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const Customer = require('../../models/customer')
 const emailTemplate = require('../../utils/emailTemplate')
+const customerId = require('../../utils/customerId')
 
 const createCustomer = async (req, res) => {
   try {
@@ -113,9 +114,9 @@ const getCustomerTokens = async (req, res) => {
 }
 
 const getCustomer = async (req, res) => {
-  const customerId = req.params.customerId
+  const custId = await customerId(req)
   const customer = await Customer
-    .findOne({ _id: customerId })
+    .findOne({ _id: custId })
     .populate('addresses')
     .select('-password')
 
@@ -123,9 +124,9 @@ const getCustomer = async (req, res) => {
 }
 
 const updateCustomer = async (req, res) => {
-  const customerId = req.params.customerId
   const data = req.body
   const { type } = data
+  const custId = await customerId(req)
 
   if (!type) {
     return res.status(401).send({
@@ -140,8 +141,8 @@ const updateCustomer = async (req, res) => {
   }
 
   try {
-    await Customer.updateCustomer(customerId, data)
-    const customer = await Customer.findOne({ _id: customerId }).select('-password')
+    await Customer.updateCustomer(custId, data)
+    const customer = await Customer.findOne({ _id: custId }).select('-password')
 
     res.status(200).send(customer)
   } catch (err) {
@@ -151,7 +152,8 @@ const updateCustomer = async (req, res) => {
 
 const deleteCustomer = async (req, res) => {
   try {
-    await Customer.deleteCustomer(req.params.customerId)
+    const custId = await customerId(req)
+    await Customer.deleteCustomer(custId)
 
     res.status(204).send({
       message: 'Customer successfully deleted'

@@ -1,4 +1,5 @@
 const Order = require('../../models/order/index.js')
+const customerId = require('../../utils/customerId')
 const emailTemplate = require('../../utils/emailTemplate')
 const jwt = require('jsonwebtoken')
 
@@ -61,14 +62,12 @@ const createOrder = async (req, res) => {
 
 const getOrders = async (req, res) => {
   try {
-    const token = req.header('X-Trolify-Customer-Token')
     const query = req.query
     const page = parseInt(query.page)
     const limit = parseInt(query.limit)
-    const decodedToken = jwt.verify(token, process.env.SECRET_KEY)
-    const customerId = decodedToken._id
+    const custId = await customerId(req)
 
-    const orders = await Order.findOrdersByCustomerId({ page, limit, customerId })
+    const orders = await Order.findOrdersByCustomerId({ page, limit, customerId: custId })
 
     res.status(200).send(orders)
   } catch (err) {

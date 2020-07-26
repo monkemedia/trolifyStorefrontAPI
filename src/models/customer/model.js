@@ -57,6 +57,7 @@ customerSchema.statics.verifyToken = async (verify_token) => {
 // Update customer
 customerSchema.statics.updateCustomer = async (customerId, customerDetails) => {
   let { password } = customerDetails
+
   const savedPassword = await Customer.findOne({ _id: customerId }).select('password')
 
   if (!password) {

@@ -1,3 +1,4 @@
+const customerId = require('../../../utils/customerId')
 const CustomerWishlist = require('../../../models/customer/wishlist')
 
 const createCustomerWishlist = async (req, res) => {
@@ -6,7 +7,7 @@ const createCustomerWishlist = async (req, res) => {
     type,
     name
   } = data
-  const customerId = req.params.customerId
+  const custId = await customerId(req)
 
   if (!type) {
     return res.status(401).send({
@@ -27,7 +28,7 @@ const createCustomerWishlist = async (req, res) => {
   }
 
   try {
-    const customerWishlist = new CustomerWishlist({ ...data, customer_id: customerId })
+    const customerWishlist = new CustomerWishlist({ ...data, customer_id: custId })
 
     await customerWishlist.save()
 
@@ -39,8 +40,8 @@ const createCustomerWishlist = async (req, res) => {
 
 const getCustomerWishlists = async (req, res) => {
   try {
-    const customerId = req.params.customerId
-    const customerWishlistes = await CustomerWishlist.findCustomerWishlists(customerId)
+    const custId = await customerId(req)
+    const customerWishlistes = await CustomerWishlist.findCustomerWishlists(custId)
 
     res.status(200).send(customerWishlistes)
   } catch (err) {
