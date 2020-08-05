@@ -137,7 +137,7 @@ const cartSchema = new Schema({
       type: String
     }
   },
-  products: [{
+  line_items: [{
     product_id: {
       type: String,
       required: true

@@ -3,29 +3,22 @@ const Schema = mongoose.Schema
 
 const categorySchema = new Schema({
   type: {
-    type: String,
-    required: true
+    type: String
   },
   name: {
-    type: String,
-    required: true
+    type: String
   },
   slug: {
-    type: String,
-    required: true,
-    unique: true
+    type: String
   },
   description: {
-    type: String,
-    required: false
+    type: String
   },
   parent_id: {
-    type: String,
-    default: null
+    type: String
   },
   status: {
-    type: Object,
-    required: false
+    type: Object
   }
 }, { versionKey: false })
 

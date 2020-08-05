@@ -3,59 +3,47 @@ const Schema = mongoose.Schema
 
 const productVariantSchema = new Schema({
   type: {
-    type: String,
-    required: true
+    type: String
   },
   price: {
-    type: Object,
-    required: true
+    type: Object
   },
   sale_price: {
-    type: Object,
-    required: true
+    type: Object
   },
   on_sale: {
-    type: Boolean,
-    default: false
+    type: Boolean
   },
   stock: {
-    type: Number,
-    default: 0
+    type: Number
   },
   images: [{
     type: Schema.Types.ObjectId,
     ref: 'ProductVariantImage'
   }],
   sort_order: {
-    type: Number,
-    default: 0
+    type: Number
   },
   sku: {
-    type: String,
-    default: ''
+    type: String
   },
   product_id: {
-    type: String,
-    required: true
+    type: String
   },
   option_values: [
     {
       _id: false,
       id: {
-        type: String,
-        default: ''
+        type: String
       },
       label: {
-        type: String,
-        default: ''
+        type: String
       },
       option_id: {
-        type: String,
-        default: ''
+        type: String
       },
       option_display_name: {
-        type: String,
-        default: ''
+        type: String
       }
     }
   ]

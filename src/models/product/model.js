@@ -5,9 +5,34 @@ const productSchema = require('./schema')
 productSchema.plugin(deepPopulate)
 
 // Get all products
-productSchema.statics.findProducts = async ({ page, limit }) => {
+productSchema.statics.findProducts = async ({ page, limit, keyword, categories, status, sort }) => {
+  const query = {}
+
+  if (categories) {
+    Object.assign(query, {
+      categories: {
+        $in: categories.split(',')
+      }
+    })
+  }
+
+  if (status) {
+    Object.assign(query, { status })
+  }
+
+  if (keyword) {
+    Object.assign(query, {
+      $or: [
+        { name: { $regex: keyword, $options: 'i' } },
+        { sku: { $regex: keyword, $options: 'i' } },
+        { description: { $regex: keyword, $options: 'i' } },
+        { search_keywords: { $regex: keyword, $options: 'i' } }
+      ]
+    })
+  }
+
   const products = await Product
-    .find({})
+    .find(query)
     .sort('-created_at')
     .populate('images')
     .deepPopulate('variants.images')
@@ -23,36 +48,6 @@ productSchema.statics.findProducts = async ({ page, limit }) => {
       },
       results: {
         total
-      }
-    }
-  }
-}
-
-// Search products by Name or SKU
-productSchema.statics.search = async ({ page, limit, keyword }) => {
-  const searchQuery = {
-    $or: [
-      { name: { $regex: keyword, $options: 'i' } },
-      { sku: { $regex: keyword, $options: 'i' } }
-    ]
-  }
-  const products = await Product
-    .find(searchQuery)
-    .skip((page - 1) * limit)
-    .limit(limit)
-    .populate('images')
-    .deepPopulate('variants.images')
-
-  const total = await Product.countDocuments(searchQuery)
-  return {
-    data: products,
-    meta: {
-      pagination: {
-        current: page,
-        total: products.length
-      },
-      results: {
-        total: total
       }
     }
   }

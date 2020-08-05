@@ -3,49 +3,38 @@ const Schema = mongoose.Schema
 
 const couponSchema = Schema({
   type: {
-    type: String,
-    required: true
+    type: String
   },
   name: {
-    type: String,
-    required: true
+    type: String
   },
   code: {
     type: String,
-    required: true,
     unique: true
   },
   coupon_type: {
-    type: String,
-    required: true
+    type: String
   },
   amount: {
-    type: Number,
-    required: true
+    type: Number
   },
   enabled: {
-    type: Boolean,
-    default: true
+    type: Boolean
   },
   expiry: {
-    type: Date,
-    default: null
+    type: Date
   },
   number_uses: {
-    type: Number,
-    default: 0
+    type: Number
   },
   max_uses: {
-    type: Number,
-    default: null
+    type: Number
   },
   max_uses_per_customer: {
-    type: Number,
-    default: null
+    type: Number
   },
   min_purchase: {
-    type: Number,
-    default: 0
+    type: Number
   },
   created_at: {
     type: Date

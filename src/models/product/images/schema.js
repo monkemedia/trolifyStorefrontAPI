@@ -3,33 +3,25 @@ const Schema = mongoose.Schema
 
 const productImageSchema = new Schema({
   type: {
-    type: String,
-    required: true
+    type: String
   },
   image_id: {
-    type: String,
-    required: true,
-    unique: true
+    type: String
   },
   image_url: {
-    type: String,
-    required: true
+    type: String
   },
   product_id: {
-    type: String,
-    required: true
+    type: String
   },
   sort_order: {
-    type: Number,
-    default: 0
+    type: Number
   },
   description: {
-    type: String,
-    default: ''
+    type: String
   },
   is_thumbnail: {
-    type: Boolean,
-    default: false
+    type: Boolean
   }
 }, { versionKey: false })
 

@@ -7,92 +7,73 @@ const orderSchema = new Schema({
     required: true
   },
   customer_id: {
-    type: Schema.Types.Mixed,
-    default: 0
+    type: Schema.Types.Mixed
   },
   status_id: {
-    type: Number,
-    default: 1
+    type: Number
   },
   discount_amount_exc_tax: {
-    type: Number,
-    default: 0
+    type: Number
   },
   discount_amount_inc_tax: {
-    type: Number,
-    default: 0
+    type: Number
   },
   coupon: {
     id: {
-      type: String,
-      default: ''
+      type: String
     },
     code: {
-      type: String,
-      default: ''
+      type: String
     },
     amount: {
-      type: Number,
-      default: 0
+      type: Number
     },
     coupon_type: {
-      type: String,
-      default: ''
+      type: String
     }
   },
   subtotal_exc_tax: {
-    type: Number,
-    default: 0
+    type: Number
   },
   subtotal_inc_tax: {
-    type: Number,
-    default: 0
+    type: Number
   },
   total_exc_tax: {
-    type: Number,
-    default: 0
+    type: Number
   },
   total_inc_tax: {
-    type: Number,
-    default: 0
+    type: Number
   },
   shipping_cost_exc_tax: {
-    type: Number,
-    default: 0
+    type: Number
   },
   shipping_cost_inc_tax: {
-    type: Number,
-    default: 0
+    type: Number
   },
   shipping_method: {
-    type: String,
-    default: ''
+    type: String
   },
   refunded_shipping: {
     type: Boolean,
     default: false
   },
   currency_code: {
-    type: String,
-    default: 'GBP'
+    type: String
   },
   payment_method: {
-    type: String,
-    default: ''
+    type: String
   },
   payment_provider_id: {
-    type: String,
-    default: ''
+    type: String
   },
   payment_status: {
-    type: String,
-    default: ''
+    type: String
   },
   refunded_amount: {
     type: Number,
-    default: 0
+    defualt: 0
   },
-  date_created: {
+  created_at: {
     type: Date,
     default: Date.now
   },
@@ -105,12 +86,10 @@ const orderSchema = new Schema({
     default: false
   },
   comments: {
-    type: String,
-    default: ''
+    type: String
   },
   staff_notes: {
-    type: String,
-    default: ''
+    type: String
   },
   billing_address: {
     first_name: {
@@ -122,16 +101,14 @@ const orderSchema = new Schema({
       required: true
     },
     company_name: {
-      type: String,
-      default: ''
+      type: String
     },
     line_1: {
       type: String,
       required: true
     },
     line_2: {
-      type: String,
-      default: ''
+      type: String
     },
     city: {
       type: String,
@@ -150,12 +127,10 @@ const orderSchema = new Schema({
       required: true
     },
     email: {
-      type: String,
-      default: ''
+      type: String
     },
     phone_number: {
-      type: String,
-      default: ''
+      type: String
     }
   },
   shipping_address: {
@@ -168,16 +143,14 @@ const orderSchema = new Schema({
       required: true
     },
     company_name: {
-      type: String,
-      default: ''
+      type: String
     },
     line_1: {
       type: String,
       required: true
     },
     line_2: {
-      type: String,
-      default: ''
+      type: String
     },
     city: {
       type: String,
@@ -196,12 +169,10 @@ const orderSchema = new Schema({
       required: true
     },
     email: {
-      type: String,
-      default: ''
+      type: String
     },
     phone_number: {
-      type: String,
-      default: ''
+      type: String
     }
   },
   products: [{
@@ -230,24 +201,20 @@ const orderSchema = new Schema({
       required: true
     },
     price: {
-      type: Number,
-      default: 0
+      type: Number
     },
     sale_price: {
-      type: Number,
-      default: 0
+      type: Number
     },
     on_sale: {
       type: Boolean,
       default: false
     },
-    refund_amount: {
-      type: Number,
-      default: 0
+    refunded_amount: {
+      type: Number
     },
     refund_reason: {
-      type: String,
-      default: ''
+      type: String
     },
     images: {
       type: Array,
