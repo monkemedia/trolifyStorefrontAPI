@@ -5,8 +5,13 @@ const productSchema = require('./schema')
 productSchema.plugin(deepPopulate)
 
 // Get all products
-productSchema.statics.findProducts = async ({ page, limit, keyword, categories, status, sort }) => {
-  const query = {}
+productSchema.statics.findProducts = async ({ page, limit, keyword, categories, status, is_featured, sort }) => {
+  const query = {
+    status: status || 'live'
+  }
+  const sortObj = {
+    created_at: 'desc'
+  }
 
   if (categories) {
     Object.assign(query, {
@@ -14,10 +19,6 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
         $in: categories.split(',')
       }
     })
-  }
-
-  if (status) {
-    Object.assign(query, { status })
   }
 
   if (keyword) {
@@ -31,9 +32,21 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
     })
   }
 
+  if (is_featured) {
+    Object.assign(query, { is_featured })
+  }
+
+  if (sort) {
+    delete sortObj.created_at
+    const split = sort.split(':')
+    sortObj[split[0]] = split[1]
+  }
+
+  console.log(sortObj)
+
   const products = await Product
     .find(query)
-    .sort('-created_at')
+    .sort(sortObj)
     .populate('images')
     .deepPopulate('variants.images')
     .skip((page - 1) * limit)

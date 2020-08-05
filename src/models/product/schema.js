@@ -30,10 +30,10 @@ const productSchema = Schema({
     type: String
   },
   price: {
-    type: Object
+    type: Number
   },
   sale_price: {
-    type: Object
+    type: Number
   },
   on_sale: {
     type: Boolean
