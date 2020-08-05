@@ -10,13 +10,11 @@ const getProducts = async (req, res) => {
     const page = parseInt(query.page) || 1
     const limit = parseInt(query.limit) || 20
     const keyword = query && query.keyword
-    let products
+    const categories = query && query.categories
+    const status = query && query.status
+    const sort = query && query.sort
+    const products = await Product.findProducts({ page, limit, keyword, categories, status, sort })
 
-    if (keyword) {
-      products = await Product.search({ page, keyword, limit })
-    } else {
-      products = await Product.findProducts({ page, limit })
-    }
     res.status(200).send(products)
   } catch (err) {
     res.status(400).send(err)
@@ -25,12 +23,7 @@ const getProducts = async (req, res) => {
 
 const getProduct = async (req, res) => {
   const productId = req.params.productId
-  let product
-  if (productId === 'count') {
-    product = await Product.getCount()
-  } else {
-    product = await Product.findProduct(productId)
-  }
+  const product = await Product.findProduct(productId)
 
   res.status(200).send(product)
 }

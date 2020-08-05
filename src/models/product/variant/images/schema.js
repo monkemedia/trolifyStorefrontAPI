@@ -3,29 +3,22 @@ const Schema = mongoose.Schema
 
 const productVariantImageSchema = new Schema({
   type: {
-    type: String,
-    required: true
+    type: String
   },
   image_id: {
-    type: String,
-    required: true,
-    unique: true
+    type: String
   },
   product_id: {
-    type: String,
-    required: true
+    type: String
   },
   image_url: {
-    type: String,
-    required: true
+    type: String
   },
   variant_id: {
-    type: String,
-    required: true
+    type: String
   },
   description: {
-    type: String,
-    default: ''
+    type: String
   }
 }, { versionKey: false })
 

@@ -3,26 +3,19 @@ const Schema = mongoose.Schema
 
 const productSchema = Schema({
   type: {
-    type: String,
-    required: true
+    type: String
   },
   name: {
-    type: String,
-    required: true
+    type: String
   },
   slug: {
-    type: String,
-    required: true,
-    unique: true
+    type: String
   },
   sku: {
-    type: String,
-    required: true,
-    unique: true
+    type: String
   },
   stock: {
-    type: Number,
-    required: true
+    type: Number
   },
   track_inventory: {
     type: String,
@@ -34,24 +27,28 @@ const productSchema = Schema({
     default: 'draft'
   },
   description: {
-    type: String,
-    required: true
+    type: String
   },
   price: {
-    type: Object,
-    required: true
+    type: Object
   },
   sale_price: {
-    type: Object,
-    required: false
+    type: Object
   },
   on_sale: {
-    type: Boolean,
-    default: false
+    type: Boolean
   },
   commodity_type: {
-    type: String,
-    required: true
+    type: String
+  },
+  categories: {
+    type: Array
+  },
+  search_keywords: {
+    type: Array
+  },
+  total_sold: {
+    type: Number
   },
   images: [
     {
@@ -66,40 +63,31 @@ const productSchema = Schema({
     }
   ],
   created_at: {
-    type: Date,
-    default: Date.now
+    type: Date
   },
   updated_at: {
-    type: Date,
-    default: ''
+    type: Date
   },
   weight: {
-    type: Number,
-    default: null
+    type: Number
   },
   width: {
-    type: Number,
-    default: null
+    type: Number
   },
   depth: {
-    type: Number,
-    default: null
+    type: Number
   },
   height: {
-    type: Number,
-    default: null
+    type: Number
   },
   fixed_shipping_cost: {
-    type: Number,
-    default: null
+    type: Number
   },
   is_free_shipping: {
-    type: Boolean,
-    default: false
+    type: Boolean
   },
   is_featured: {
-    type: Boolean,
-    default: false
+    type: Boolean
   }
 }, { versionKey: false })
 

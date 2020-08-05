@@ -45,6 +45,10 @@ const customerSchema = new Schema({
       ref: 'CustomerAddress'
     }
   ],
+  store_credit: {
+    type: Number,
+    default: 0
+  },
   password: {
     type: String,
     required: true,
