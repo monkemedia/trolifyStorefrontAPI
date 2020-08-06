@@ -5,7 +5,7 @@ const productSchema = require('./schema')
 productSchema.plugin(deepPopulate)
 
 // Get all products
-productSchema.statics.findProducts = async ({ page, limit, keyword, categories, status, is_featured, sort }) => {
+productSchema.statics.findProducts = async ({ page, limit, keyword, categories, status, is_featured, sort, price }) => {
   const query = {
     status: status || 'live'
   }
@@ -38,11 +38,38 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
 
   if (sort) {
     delete sortObj.created_at
-    const split = sort.split(':')
-    sortObj[split[0]] = split[1]
+    const splitSort = sort.split(':')
+    sortObj[splitSort[0]] = splitSort[1]
   }
 
-  console.log(sortObj)
+  if (price) {
+    const priceObj = {}
+    const priceArray = [].concat(price)
+
+    priceArray.map(p => {
+      const splitPrice = p.split(':')
+      const greaterLessThan = splitPrice[0] === 'min' ? '$gte' : '$lte'
+      priceObj[greaterLessThan] = Number(splitPrice[1])
+    })
+
+    Object.assign(query, {
+      $or: [
+        {
+          on_sale: 'true',
+          $and: [{
+            sale_price: priceObj
+          }]
+        },
+        {
+          on_sale: false,
+          $and: [{
+            price: priceObj
+          }]
+        }
+      ]
+
+    })
+  }
 
   const products = await Product
     .find(query)
