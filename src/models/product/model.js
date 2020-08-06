@@ -39,7 +39,8 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
   if (sort) {
     delete sortObj.created_at
     const splitSort = sort.split(':')
-    sortObj[splitSort[0]] = splitSort[1]
+    const [key, value] = splitSort
+    sortObj[key] = (value || 'desc')
   }
 
   if (price) {
@@ -48,8 +49,9 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
 
     priceArray.map(p => {
       const splitPrice = p.split(':')
-      const greaterLessThan = splitPrice[0] === 'min' ? '$gte' : '$lte'
-      priceObj[greaterLessThan] = Number(splitPrice[1])
+      const [key, value] = splitPrice
+      const greaterLessThan = key === 'min' ? '$gte' : '$lte'
+      priceObj[greaterLessThan] = Number(value)
     })
 
     Object.assign(query, {
