@@ -73,7 +73,6 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
           }]
         }
       ]
-
     })
   }
 
@@ -84,7 +83,10 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
     .deepPopulate('variants.images')
     .skip((page - 1) * limit)
     .limit(limit)
-  const total = await Product.countDocuments()
+  const total = await Product
+    .find(query)
+    .sort(sortObj)
+    .countDocuments()
   return {
     data: products,
     meta: {
