@@ -5,7 +5,7 @@ const productSchema = require('./schema')
 productSchema.plugin(deepPopulate)
 
 // Get all products
-productSchema.statics.findProducts = async ({ page, limit, keyword, categories, status, is_featured, sort, price }) => {
+productSchema.statics.findProducts = async ({ page, limit, keyword, categories, status, is_featured, sort, price, brand_id }) => {
   const query = {
     status: status || 'live'
   }
@@ -34,6 +34,10 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
 
   if (is_featured) {
     Object.assign(query, { is_featured })
+  }
+
+  if (brand_id) {
+    Object.assign(query, { brand_id })
   }
 
   if (sort) {
