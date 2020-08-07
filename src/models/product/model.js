@@ -79,7 +79,7 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
   const products = await Product
     .find(query)
     .sort(sortObj)
-    .populate('images')
+    .populate('images options')
     .deepPopulate('variants.images')
     .skip((page - 1) * limit)
     .limit(limit)
@@ -105,7 +105,7 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
 productSchema.statics.findProduct = async (_id) => {
   const product = await Product
     .findOne({ _id })
-    .populate('images')
+    .populate('images options')
     .deepPopulate('variants.images')
   return product
 }

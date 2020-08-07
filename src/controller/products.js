@@ -1,5 +1,6 @@
 
 require('../models/product/images')
+require('../models/product/option')
 require('../models/product/variant')
 require('../models/product/variant/images')
 const Product = require('../models/product')
