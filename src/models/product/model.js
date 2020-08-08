@@ -5,7 +5,18 @@ const productSchema = require('./schema')
 productSchema.plugin(deepPopulate)
 
 // Get all products
-productSchema.statics.findProducts = async ({ page, limit, keyword, categories, status, is_featured, sort, price, brand_id }) => {
+productSchema.statics.findProducts = async ({
+  page,
+  limit,
+  keyword,
+  categories,
+  status,
+  is_featured,
+  sort,
+  price,
+  brand_id,
+  facets
+}) => {
   const query = {
     status: status || 'live'
   }
@@ -51,6 +62,25 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
     sortObj[key] = (value || 'desc')
   }
 
+  if (facets) {
+    const facetArray = []
+    const splitFacets = facets.split(',')
+    splitFacets.map(facet => {
+      const splitFacet = facet.split(':')
+      const [name, value] = splitFacet
+      facetArray.push({
+        name,
+        value
+      })
+    })
+
+    Object.assign(query, {
+      facets: {
+        $in: facetArray
+      }
+    })
+  }
+
   if (price) {
     const priceObj = {}
     const priceArray = [].concat(price)
@@ -79,8 +109,6 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
       ]
     })
   }
-
-  console.log(query)
 
   const products = await Product
     .find(query)

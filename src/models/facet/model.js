@@ -32,11 +32,14 @@ facetSchema.statics.findFacetByName = async (facetName) => {
       },
       {
         $group: {
-          _id: '$facets.value',
+          _id: {
+            name: '$facets.value',
+            sort_order: '$facets.sort_order'
+          },
           count: { $sum: 1 }
         }
       },
-      { $sort: { _id: 1 } }
+      { $sort: { '_id.sort_order': 1 } }
     ])
 
   return facets
