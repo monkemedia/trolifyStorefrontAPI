@@ -5,8 +5,13 @@ const productSchema = require('./schema')
 productSchema.plugin(deepPopulate)
 
 // Get all products
-productSchema.statics.findProducts = async ({ page, limit, keyword, categories, status, sort }) => {
-  const query = {}
+productSchema.statics.findProducts = async ({ page, limit, keyword, categories, status, is_featured, sort, price, brand_id }) => {
+  const query = {
+    status: status || 'live'
+  }
+  const sortObj = {
+    created_at: 'desc'
+  }
 
   if (categories) {
     Object.assign(query, {
@@ -14,10 +19,6 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
         $in: categories.split(',')
       }
     })
-  }
-
-  if (status) {
-    Object.assign(query, { status })
   }
 
   if (keyword) {
@@ -31,14 +32,61 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
     })
   }
 
+  if (is_featured) {
+    Object.assign(query, { is_featured })
+  }
+
+  if (brand_id) {
+    Object.assign(query, { brand_id })
+  }
+
+  if (sort) {
+    delete sortObj.created_at
+    const splitSort = sort.split(':')
+    const [key, value] = splitSort
+    sortObj[key] = (value || 'desc')
+  }
+
+  if (price) {
+    const priceObj = {}
+    const priceArray = [].concat(price)
+
+    priceArray.map(p => {
+      const splitPrice = p.split(':')
+      const [key, value] = splitPrice
+      const greaterLessThan = key === 'min' ? '$gte' : '$lte'
+      priceObj[greaterLessThan] = Number(value)
+    })
+
+    Object.assign(query, {
+      $or: [
+        {
+          on_sale: 'true',
+          $and: [{
+            sale_price: priceObj
+          }]
+        },
+        {
+          on_sale: false,
+          $and: [{
+            price: priceObj
+          }]
+        }
+      ]
+    })
+  }
+
   const products = await Product
     .find(query)
-    .sort('-created_at')
-    .populate('images')
+    .sort(sortObj)
+    .populate('images options')
     .deepPopulate('variants.images')
     .skip((page - 1) * limit)
     .limit(limit)
-  const total = await Product.countDocuments()
+  const total = await Product
+    .find(query)
+    .sort(sortObj)
+    .countDocuments()
   return {
     data: products,
     meta: {
@@ -57,7 +105,7 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
 productSchema.statics.findProduct = async (_id) => {
   const product = await Product
     .findOne({ _id })
-    .populate('images')
+    .populate('images options')
     .deepPopulate('variants.images')
   return product
 }

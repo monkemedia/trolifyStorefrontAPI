@@ -30,10 +30,10 @@ const productSchema = Schema({
     type: String
   },
   price: {
-    type: Object
+    type: Number
   },
   sale_price: {
-    type: Object
+    type: Number
   },
   on_sale: {
     type: Boolean
@@ -60,6 +60,12 @@ const productSchema = Schema({
     {
       type: Schema.Types.ObjectId,
       ref: 'ProductVariants'
+    }
+  ],
+  options: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'ProductOptions'
     }
   ],
   created_at: {

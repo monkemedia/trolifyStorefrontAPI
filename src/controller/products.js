@@ -1,5 +1,6 @@
 
 require('../models/product/images')
+require('../models/product/option')
 require('../models/product/variant')
 require('../models/product/variant/images')
 const Product = require('../models/product')
@@ -12,8 +13,22 @@ const getProducts = async (req, res) => {
     const keyword = query && query.keyword
     const categories = query && query.categories
     const status = query && query.status
+    const is_featured = query && query.is_featured
+    const brand_id = query && query.brand_id
     const sort = query && query.sort
-    const products = await Product.findProducts({ page, limit, keyword, categories, status, sort })
+    const price = query && query.price
+    const products = await Product
+      .findProducts({
+        page,
+        limit,
+        keyword,
+        categories,
+        status,
+        is_featured,
+        brand_id,
+        sort,
+        price
+      })
 
     res.status(200).send(products)
   } catch (err) {
