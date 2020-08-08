@@ -63,20 +63,26 @@ productSchema.statics.findProducts = async ({
   }
 
   if (facets) {
-    const facetArray = []
+    const nameArray = []
+    const valueArray = []
     const splitFacets = facets.split(',')
     splitFacets.map(facet => {
       const splitFacet = facet.split(':')
       const [name, value] = splitFacet
-      facetArray.push({
-        name,
-        value
-      })
+      nameArray.push(name)
+      valueArray.push(value)
     })
 
     Object.assign(query, {
       facets: {
-        $in: facetArray
+        $elemMatch: {
+          name: {
+            $in: nameArray
+          },
+          value: {
+            $in: valueArray
+          }
+        }
       }
     })
   }
