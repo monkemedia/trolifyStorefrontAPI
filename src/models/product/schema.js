@@ -68,6 +68,9 @@ const productSchema = Schema({
       ref: 'ProductOptions'
     }
   ],
+  facets: {
+    type: Array
+  },
   created_at: {
     type: Date
   },

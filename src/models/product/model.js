@@ -37,7 +37,11 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
   }
 
   if (brand_id) {
-    Object.assign(query, { brand_id })
+    Object.assign(query, {
+      brand_id: {
+        $in: brand_id.split(',')
+      }
+    })
   }
 
   if (sort) {
@@ -75,6 +79,8 @@ productSchema.statics.findProducts = async ({ page, limit, keyword, categories, 
       ]
     })
   }
+
+  console.log(query)
 
   const products = await Product
     .find(query)
