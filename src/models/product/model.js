@@ -49,7 +49,7 @@ productSchema.statics.findProducts = async ({
   }
 
   if (is_featured) {
-    Object.assign(query, { is_featured: Boolean(is_featured) })
+    Object.assign(query, { is_featured: (is_featured === 'true') })
   }
 
   if (brand_id) {
@@ -94,19 +94,32 @@ productSchema.statics.findProducts = async ({
     const optionObj = {}
     const optionsArray = [].concat(options.split(','))
 
-    console.log(optionsArray)
-
     optionsArray.map((o) => {
       const splitOptions = o.split(':')
-      console.log('splitoptions', splitOptions)
       const [key, value] = splitOptions
-      optionObj[key] = value
+      const arr = optionObj[key] ? [].concat(optionObj[key]) : []
+
+      optionObj[key] = arr
+      optionObj[key].push(value)
     })
 
-    console.log('optionObj', optionObj)
+    const opt = []
+
+    for (const [key, value] of Object.entries(optionObj)) {
+      opt.push({
+        options: {
+          $elemMatch: {
+            display_name: key,
+            'option_values.label': {
+              $in: value
+            }
+          }
+        }
+      })
+    }
 
     Object.assign(query, {
-      $or: [optionObj]
+      $or: opt
     })
   }
 
@@ -181,8 +194,15 @@ productSchema.statics.findProducts = async ({
           as: 'brand_id'
         }
       },
+      {
+        $lookup: {
+          from: 'customfields',
+          localField: 'custom_fields',
+          foreignField: '_id',
+          as: 'custom_fields'
+        }
+      },
       { $unwind: '$brand_id' },
-      { $unwind: '$options' },
       { $match: query },
       { $sort: sortObj },
       { $skip: (page - 1) * limit },
