@@ -43,6 +43,7 @@ productFiltersSchema.statics.findFilters = async () => {
           categories: [
             { $unwind: '$categories' },
             { $group: { _id: '$categories.name', count: { $sum: 1 } } }
+            // { $sort: { _id: 1 } }
           ],
           brands: [
             { $unwind: '$brands' },
