@@ -15,13 +15,18 @@ productSchema.statics.findProducts = async ({
   sort,
   price,
   brand_id,
-  facets
+  custom_fields,
+  options
 }) => {
+  const direction = {
+    desc: -1,
+    asc: 1
+  }
   const query = {
     status: status || 'live'
   }
   const sortObj = {
-    created_at: 'desc'
+    created_at: direction.desc
   }
 
   if (categories) {
@@ -44,14 +49,12 @@ productSchema.statics.findProducts = async ({
   }
 
   if (is_featured) {
-    Object.assign(query, { is_featured })
+    Object.assign(query, { is_featured: Boolean(is_featured) })
   }
 
   if (brand_id) {
     Object.assign(query, {
-      brand_id: {
-        $in: brand_id.split(',')
-      }
+      'brand_id.name': brand_id
     })
   }
 
@@ -59,22 +62,22 @@ productSchema.statics.findProducts = async ({
     delete sortObj.created_at
     const splitSort = sort.split(':')
     const [key, value] = splitSort
-    sortObj[key] = (value || 'desc')
+    sortObj[key] = (direction[value] || direction.desc)
   }
 
-  if (facets) {
+  if (custom_fields) {
     const nameArray = []
     const valueArray = []
-    const splitFacets = facets.split(',')
-    splitFacets.map(facet => {
-      const splitFacet = facet.split(':')
-      const [name, value] = splitFacet
+    const splitCustomFields = custom_fields.split(',')
+    splitCustomFields.map(customField => {
+      const splitCustomField = customField.split(':')
+      const [name, value] = splitCustomField
       nameArray.push(name)
       valueArray.push(value)
     })
 
     Object.assign(query, {
-      facets: {
+      custom_fields: {
         $elemMatch: {
           name: {
             $in: nameArray
@@ -84,6 +87,26 @@ productSchema.statics.findProducts = async ({
           }
         }
       }
+    })
+  }
+
+  if (options) {
+    const optionObj = {}
+    const optionsArray = [].concat(options.split(','))
+
+    console.log(optionsArray)
+
+    optionsArray.map((o) => {
+      const splitOptions = o.split(':')
+      console.log('splitoptions', splitOptions)
+      const [key, value] = splitOptions
+      optionObj[key] = value
+    })
+
+    console.log('optionObj', optionObj)
+
+    Object.assign(query, {
+      $or: [optionObj]
     })
   }
 
@@ -117,12 +140,55 @@ productSchema.statics.findProducts = async ({
   }
 
   const products = await Product
-    .find(query)
-    .sort(sortObj)
-    .populate('images options categories custom_fields')
-    .deepPopulate('variants.images')
-    .skip((page - 1) * limit)
-    .limit(limit)
+    .aggregate([
+      {
+        $lookup: {
+          from: 'productimages',
+          localField: 'images',
+          foreignField: '_id',
+          as: 'images'
+        }
+      },
+      {
+        $lookup: {
+          from: 'productvariants',
+          localField: 'variants',
+          foreignField: '_id',
+          as: 'variants'
+        }
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categories',
+          foreignField: '_id',
+          as: 'categories'
+        }
+      },
+      {
+        $lookup: {
+          from: 'productoptions',
+          localField: 'options',
+          foreignField: '_id',
+          as: 'options'
+        }
+      },
+      {
+        $lookup: {
+          from: 'brands',
+          localField: 'brand_id',
+          foreignField: '_id',
+          as: 'brand_id'
+        }
+      },
+      { $unwind: '$brand_id' },
+      { $unwind: '$options' },
+      { $match: query },
+      { $sort: sortObj },
+      { $skip: (page - 1) * limit },
+      { $limit: limit }
+    ])
+
   const total = await Product
     .find(query)
     .sort(sortObj)
