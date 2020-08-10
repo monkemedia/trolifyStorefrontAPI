@@ -41,8 +41,15 @@ const productSchema = Schema({
   commodity_type: {
     type: String
   },
-  categories: {
-    type: Array
+  categories: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Category'
+    }
+  ],
+  brand_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'Brand'
   },
   search_keywords: {
     type: Array
@@ -68,9 +75,12 @@ const productSchema = Schema({
       ref: 'ProductOptions'
     }
   ],
-  facets: {
-    type: Array
-  },
+  custom_fields: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'ProductCustomFields'
+    }
+  ],
   created_at: {
     type: Date
   },

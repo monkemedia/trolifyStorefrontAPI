@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const categorySchema = new Schema({
+const productFilterSchema = new Schema({
   name: {
     type: String
   }
 }, { versionKey: false })
 
-module.exports = categorySchema
+module.exports = productFilterSchema
