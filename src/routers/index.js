@@ -6,7 +6,7 @@ const customers = require('./customers/index.js')
 const customerAddresses = require('./customers/addresses/index.js')
 const customerCoupons = require('./customers/coupons/index.js')
 const customerWishlists = require('./customers/wishlists/index.js')
-const productFilters = require('./productFilters.js')
+const productFiltering = require('./productFiltering.js')
 const payments = require('./payments.js')
 const products = require('./products.js')
 const orders = require('./orders/index.js')
@@ -20,7 +20,7 @@ router.use(
   customerCoupons,
   customerWishlists,
   categories,
-  productFilters,
+  productFiltering,
   payments,
   products,
   orders

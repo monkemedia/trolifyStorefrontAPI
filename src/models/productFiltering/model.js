@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
-const productFiltersSchema = require('./schema')
+const productFilteringSchema = require('./schema')
 const Product = require('../product')
 
-// Get filters
-productFiltersSchema.statics.findFilters = async () => {
-  const filters = await Product
+// Get facets
+productFilteringSchema.statics.findFacets = async () => {
+  const facets = await Product
     .aggregate([
       {
         $lookup: {
@@ -117,25 +117,25 @@ productFiltersSchema.statics.findFilters = async () => {
       }
     ])
 
-  return filters
+  return facets
 }
 
-// // Get filtersby name
-// productFiltersSchema.statics.findFilterByName = async (filterName) => {
+// // Get facetsby name
+// productFilteringSchema.statics.findFilterByName = async (filterName) => {
 //   const filter = filterName.toLowerCase()
-//   const filters = await Product
+//   const facets = await Product
 //     .aggregate([
-//       { $unwind: '$filters' },
+//       { $unwind: '$facets' },
 //       {
 //         $match: {
-//           'filters.name': { $regex: new RegExp(filter, 'i') }
+//           'facets.name': { $regex: new RegExp(filter, 'i') }
 //         }
 //       },
 //       {
 //         $group: {
 //           _id: {
-//             name: '$filters.value',
-//             sort_order: '$filters.sort_order'
+//             name: '$facets.value',
+//             sort_order: '$facets.sort_order'
 //           },
 //           count: { $sum: 1 }
 //         }
@@ -143,9 +143,9 @@ productFiltersSchema.statics.findFilters = async () => {
 //       { $sort: { '_id.sort_order': 1 } }
 //     ])
 
-//   return filters
+//   return facets
 // }
 
-const Facet = mongoose.model('ProductFilter', productFiltersSchema)
+const ProductFiltering = mongoose.model('ProductFiltering', productFilteringSchema)
 
-module.exports = Facet
+module.exports = ProductFiltering
