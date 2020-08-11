@@ -120,31 +120,31 @@ productFiltersSchema.statics.findFilters = async () => {
   return filters
 }
 
-// Get filtersby name
-productFiltersSchema.statics.findFilterByName = async (filterName) => {
-  const filter = filterName.toLowerCase()
-  const filters = await Product
-    .aggregate([
-      { $unwind: '$filters' },
-      {
-        $match: {
-          'filters.name': { $regex: new RegExp(filter, 'i') }
-        }
-      },
-      {
-        $group: {
-          _id: {
-            name: '$filters.value',
-            sort_order: '$filters.sort_order'
-          },
-          count: { $sum: 1 }
-        }
-      },
-      { $sort: { '_id.sort_order': 1 } }
-    ])
+// // Get filtersby name
+// productFiltersSchema.statics.findFilterByName = async (filterName) => {
+//   const filter = filterName.toLowerCase()
+//   const filters = await Product
+//     .aggregate([
+//       { $unwind: '$filters' },
+//       {
+//         $match: {
+//           'filters.name': { $regex: new RegExp(filter, 'i') }
+//         }
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             name: '$filters.value',
+//             sort_order: '$filters.sort_order'
+//           },
+//           count: { $sum: 1 }
+//         }
+//       },
+//       { $sort: { '_id.sort_order': 1 } }
+//     ])
 
-  return filters
-}
+//   return filters
+// }
 
 const Facet = mongoose.model('ProductFilter', productFiltersSchema)
 

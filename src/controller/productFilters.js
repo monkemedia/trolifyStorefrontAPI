@@ -10,19 +10,19 @@ const getFilters = async (req, res) => {
   }
 }
 
-const getFilterByName = async (req, res) => {
-  const facetName = req.params.facetName
+// const getFilterByName = async (req, res) => {
+//   const facetName = req.params.facetName
 
-  try {
-    const filters = await ProductFilter.findFilterByName(facetName)
+//   try {
+//     const filters = await ProductFilter.findFilterByName(facetName)
 
-    res.status(200).send(filters)
-  } catch (err) {
-    res.status(400).send(err)
-  }
-}
+//     res.status(200).send(filters)
+//   } catch (err) {
+//     res.status(400).send(err)
+//   }
+// }
 
 module.exports = {
-  getFilters,
-  getFilterByName
+  getFilters
+  // getFilterByName
 }
