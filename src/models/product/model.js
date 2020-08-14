@@ -16,7 +16,8 @@ productSchema.statics.findProducts = async ({
   price,
   brand_id,
   custom_fields,
-  options
+  options,
+  rating
 }) => {
   const direction = {
     desc: -1,
@@ -152,6 +153,22 @@ productSchema.statics.findProducts = async ({
     })
   }
 
+  if (rating) {
+    const ratingObj = {}
+    const ratingArray = [].concat(rating)
+
+    ratingArray.map(p => {
+      const splitRatings = p.split(':')
+      const [key, value] = splitRatings
+      const greaterLessThan = key === 'min' ? '$gte' : '$lte'
+      ratingObj[greaterLessThan] = Number(value)
+    })
+
+    Object.assign(query, {
+      reviews_rating_sum: ratingObj
+    })
+  }
+
   const products = await Product
     .aggregate([
       {
@@ -200,6 +217,20 @@ productSchema.statics.findProducts = async ({
           localField: 'custom_fields',
           foreignField: '_id',
           as: 'custom_fields'
+        }
+      },
+      {
+        $lookup: {
+          from: 'productreviews',
+          localField: 'reviews',
+          foreignField: '_id',
+          as: 'reviews'
+        }
+      },
+      {
+        $addFields: {
+          reviews_rating_sum: { $avg: '$reviews.rating' },
+          reviews_count: { $size: '$reviews' }
         }
       },
       { $unwind: '$brand_id' },

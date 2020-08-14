@@ -20,6 +20,7 @@ const getProducts = async (req, res) => {
     const price = query && query.price
     const custom_fields = query && query.custom_fields
     const options = query && query.options
+    const rating = query && query.rating
     const products = await Product
       .findProducts({
         page,
@@ -32,7 +33,8 @@ const getProducts = async (req, res) => {
         sort,
         price,
         custom_fields,
-        options
+        options,
+        rating
       })
 
     res.status(200).send(products)
