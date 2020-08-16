@@ -39,11 +39,18 @@ productFilteringSchema.statics.findFacets = async () => {
         }
       },
       {
+        $lookup: {
+          from: 'productreviews',
+          localField: 'reviews',
+          foreignField: '_id',
+          as: 'reviews'
+        }
+      },
+      {
         $facet: {
           categories: [
             { $unwind: '$categories' },
             { $group: { _id: '$categories.name', count: { $sum: 1 } } }
-            // { $sort: { _id: 1 } }
           ],
           brands: [
             { $unwind: '$brands' },
@@ -112,7 +119,8 @@ productFilteringSchema.statics.findFacets = async () => {
           sizes: {
             $setUnion: ['$sizes', '$custom_fields_size']
           },
-          custom_fields: 1
+          custom_fields: 1,
+          ratings: 1
         }
       }
     ])
