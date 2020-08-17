@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const { auth } = require('../middleware/auth')
+const { auth } = require('../../middleware/auth')
 const {
   getProducts,
   getProduct
-} = require('../controller/products')
+} = require('../../controller/products')
 
 // Get products
 router.get('/products', auth, (req, res) => getProducts(req, res))
