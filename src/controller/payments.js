@@ -39,7 +39,6 @@ const createPayment = async (req, res) => {
 }
 
 const getPayment = async (req, res) => {
-  console.log('here')
   const id = req.params.paymentId
   try {
     const payment = await stripe.charges.retrieve(id)

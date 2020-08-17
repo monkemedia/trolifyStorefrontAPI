@@ -24,6 +24,18 @@ const customerSchema = new Schema({
     type: String,
     default: null
   },
+  login_attempts: {
+    type: Number,
+    default: 0
+  },
+  lock_until: {
+    type: Number,
+    default: null
+  },
+  locked: {
+    type: Boolean,
+    default: false
+  },
   accepts_marketing: {
     type: Boolean,
     default: false
@@ -53,6 +65,13 @@ const customerSchema = new Schema({
     type: String,
     required: true,
     minLength: 8
+  },
+  created_at: {
+    type: Date,
+    default: Date.now
+  },
+  updated_at: {
+    type: Date
   }
 }, { versionKey: false })
 

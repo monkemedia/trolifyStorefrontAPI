@@ -1,7 +1,6 @@
 const httpError = require('http-errors')
 
 module.exports = (statusCode, err) => {
-  console.log('here')
   // Returns correct error message when there are duplicated
   if (err.name === 'MongoError' && err.code === 11000) {
     const getDuplicateKey = err.errmsg.split('index: ')[1].split('_')[0]
