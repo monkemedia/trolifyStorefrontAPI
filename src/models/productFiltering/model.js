@@ -106,6 +106,22 @@ productFilteringSchema.statics.findFacets = async () => {
                 count: { $sum: 1 }
               }
             }
+          ],
+          is_featured: [
+            { $match: { is_featured: { $eq: true } } },
+            { $group: { _id: 'Featured', count: { $sum: 1 } } }
+          ],
+          is_free_shipping: [
+            { $match: { is_free_shipping: { $eq: true } } },
+            { $group: { _id: 'Free shipping', count: { $sum: 1 } } }
+          ],
+          on_sale: [
+            { $match: { on_sale: { $eq: true } } },
+            { $group: { _id: 'On sale', count: { $sum: 1 } } }
+          ],
+          ratings: [
+            { $unwind: '$reviews' },
+            { $group: { _id: '$reviews.rating', count: { $sum: 1 } } }
           ]
         }
       },
@@ -119,40 +135,17 @@ productFilteringSchema.statics.findFacets = async () => {
           sizes: {
             $setUnion: ['$sizes', '$custom_fields_size']
           },
+          ratings: 1,
           custom_fields: 1,
-          ratings: 1
+          other: {
+            $setUnion: ['$is_featured', '$is_free_shipping', '$on_sale']
+          }
         }
       }
     ])
 
   return facets
 }
-
-// // Get facetsby name
-// productFilteringSchema.statics.findFilterByName = async (filterName) => {
-//   const filter = filterName.toLowerCase()
-//   const facets = await Product
-//     .aggregate([
-//       { $unwind: '$facets' },
-//       {
-//         $match: {
-//           'facets.name': { $regex: new RegExp(filter, 'i') }
-//         }
-//       },
-//       {
-//         $group: {
-//           _id: {
-//             name: '$facets.value',
-//             sort_order: '$facets.sort_order'
-//           },
-//           count: { $sum: 1 }
-//         }
-//       },
-//       { $sort: { '_id.sort_order': 1 } }
-//     ])
-
-//   return facets
-// }
 
 const ProductFiltering = mongoose.model('ProductFiltering', productFilteringSchema)
 

@@ -3,7 +3,7 @@ const productReviewSchema = require('./schema')
 const Product = require('../model')
 
 // Get product reviews
-productReviewSchema.statics.findProductReviews = async ({page, limit, productId}) => {
+productReviewSchema.statics.findProductReviews = async ({ page, limit, productId }) => {
   const query = {}
 
   if (productId) {
