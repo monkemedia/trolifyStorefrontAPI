@@ -102,7 +102,7 @@ const productSchema = Schema({
   fixed_shipping_cost: {
     type: Number
   },
-  is_free_shipping: {
+  has_free_shipping: {
     type: Boolean
   },
   is_featured: {

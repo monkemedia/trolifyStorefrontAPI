@@ -15,6 +15,7 @@ const getProducts = async (req, res) => {
     const categories = query && query.categories
     const status = query && query.status
     const is_featured = query && query.is_featured
+    const has_free_shipping = query && query.has_free_shipping
     const brand_id = query && query.brand_id
     const sort = query && query.sort
     const price = query && query.price
@@ -29,6 +30,7 @@ const getProducts = async (req, res) => {
         categories,
         status,
         is_featured,
+        has_free_shipping,
         brand_id,
         sort,
         price,

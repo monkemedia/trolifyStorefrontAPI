@@ -12,6 +12,7 @@ productSchema.statics.findProducts = async ({
   categories,
   status,
   is_featured,
+  has_free_shipping,
   sort,
   price,
   brand_id,
@@ -51,6 +52,10 @@ productSchema.statics.findProducts = async ({
 
   if (is_featured) {
     Object.assign(query, { is_featured: (is_featured === 'true') })
+  }
+
+  if (has_free_shipping) {
+    Object.assign(query, { has_free_shipping: (has_free_shipping === 'true') })
   }
 
   if (brand_id) {
