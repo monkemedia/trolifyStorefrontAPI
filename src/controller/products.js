@@ -1,6 +1,7 @@
 
 require('../models/product/images')
 require('../models/product/option')
+require('../models/product/customField')
 require('../models/product/variant')
 require('../models/product/variant/images')
 const Product = require('../models/product')
@@ -17,6 +18,9 @@ const getProducts = async (req, res) => {
     const brand_id = query && query.brand_id
     const sort = query && query.sort
     const price = query && query.price
+    const custom_fields = query && query.custom_fields
+    const options = query && query.options
+    const rating = query && query.rating
     const products = await Product
       .findProducts({
         page,
@@ -27,7 +31,10 @@ const getProducts = async (req, res) => {
         is_featured,
         brand_id,
         sort,
-        price
+        price,
+        custom_fields,
+        options,
+        rating
       })
 
     res.status(200).send(products)

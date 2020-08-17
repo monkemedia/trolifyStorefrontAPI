@@ -1,7 +1,6 @@
 const Order = require('../../models/order/index.js')
 const customerId = require('../../utils/customerId')
 const emailTemplate = require('../../utils/emailTemplate')
-const jwt = require('jsonwebtoken')
 
 const createOrder = async (req, res) => {
   const data = req.body
