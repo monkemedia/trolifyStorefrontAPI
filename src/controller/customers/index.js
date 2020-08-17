@@ -104,6 +104,10 @@ const getCustomerTokens = async (req, res) => {
       return res.status(401).send(errorHandler(401, 'Sorry, we can’t find an account with this email.'))
     }
 
+    if (customer.locked) {
+      return res.status(401).send(errorHandler(401, `Sorry, this account has been locked. Please contact us at ${process.env.EMAIL_ADDRESS}`))
+    }
+
     if (customer.lock_until && (customer.lock_until > Date.now())) {
       return res.status(401).send(errorHandler(401, 'Sorry, you are temporarily locked from your account.'))
     }

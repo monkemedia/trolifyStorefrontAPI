@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const errorHandler = require('../utils/errorHandler')
+const Customer = require('../models/customer/model')
 
 const auth = async (req, res, next) => {
   let token = req.header('Authorization')
@@ -30,7 +31,11 @@ const customerAuth = async (req, res, next) => {
   }
 
   try {
-    await jwt.verify(token, process.env.SECRET_KEY)
+    const verifyToken = await jwt.verify(token, process.env.SECRET_KEY)
+    const customer = await Customer.findOne({ _id: verifyToken._id })
+    if (customer.locked) {
+      return res.status(401).send(errorHandler(401, `Sorry, this account has been locked. Please contact us at ${process.env.EMAIL_ADDRESS}`))
+    }
     next()
   } catch (err) {
     if (err.message === 'jwt expired') {

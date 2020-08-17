@@ -32,6 +32,10 @@ const customerSchema = new Schema({
     type: Number,
     default: null
   },
+  locked: {
+    type: Boolean,
+    default: false
+  },
   accepts_marketing: {
     type: Boolean,
     default: false
