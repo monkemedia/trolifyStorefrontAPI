@@ -1,14 +1,16 @@
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
 const Customer = require('../../models/customer')
 const emailTemplate = require('../../utils/emailTemplate')
 const customerId = require('../../utils/customerId')
+const errorHandler = require('../../utils/errorHandler')
 
 const createCustomer = async (req, res) => {
   try {
     // Check to see if customer already exists
     const data = req.body
     const { first_name, last_name, email, password, type } = data
-    const customerExists = await Customer.findByCredentials(email)
+    const customerExists = await Customer.findByEmailAddress(email)
 
     if (!type) {
       return res.status(401).send({
@@ -96,10 +98,44 @@ const getCustomerTokens = async (req, res) => {
       })
     }
 
-    const customer = await Customer.findByCredentials(email)
+    const customer = await Customer.findByEmailAddress(email)
+
+    if (!customer) {
+      return res.status(401).send(errorHandler(401, 'Sorry, we can’t find an account with this email.'))
+    }
+
+    if (customer.lock_until && (customer.lock_until > Date.now())) {
+      return res.status(401).send(errorHandler(401, 'Sorry, you are temporarily locked from your account.'))
+    }
+
+    if (!bcrypt.compareSync(password, customer.password)) {
+      if (customer.login_attempts < 3) {
+        await Customer.updateOne({ _id: customer._id }, {
+          login_attempts: customer.login_attempts += 1,
+          updated_at: Date.now()
+        })
+
+        return res.status(401).send(errorHandler(401, 'Sorry, the password is not right for this account.'))
+      }
+
+      // Lock customer out of account
+
+      await Customer.updateOne({ _id: customer._id }, {
+        login_attempts: 0,
+        lock_until: Date.now() + (30 * 60000), // 30 mins from now
+        updated_at: Date.now()
+      })
+
+      return res.status(401).send(errorHandler(401, 'Sorry, for security reasons, you will have to wait 30 minutes before trying again.'))
+    }
+
     const customerToken = await customer.generateToken('24hrs')
 
-    await customer.save()
+    await Customer.updateOne({ _id: customer._id }, {
+      login_attempts: 0,
+      lock_until: null,
+      updated_at: Date.now()
+    })
 
     res.status(200).send({
       type: 'token',
