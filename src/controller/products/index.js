@@ -1,10 +1,10 @@
 
-require('../models/product/images')
-require('../models/product/option')
-require('../models/product/customField')
-require('../models/product/variant')
-require('../models/product/variant/images')
-const Product = require('../models/product')
+require('../../models/product/images')
+require('../../models/product/option')
+require('../../models/product/customField')
+require('../../models/product/variant')
+require('../../models/product/variant/images')
+const Product = require('../../models/product')
 
 const getProducts = async (req, res) => {
   try {
