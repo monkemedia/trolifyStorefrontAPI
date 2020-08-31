@@ -8,10 +8,10 @@ const {
 } = require('../../controller/orders')
 
 // Create order
-router.post('/me/orders', auth, (req, res) => createOrder(req, res))
+router.post('/:storeHash/me/orders', auth, (req, res) => createOrder(req, res))
 // Get orders
-router.get('/me/orders', auth, (req, res) => getOrders(req, res))
+router.get('/:storeHash/me/orders', auth, (req, res) => getOrders(req, res))
 // Get order
-router.get('/me/orders/:orderId', auth, (req, res) => getOrder(req, res))
+router.get('/:storeHash/me/orders/:orderId', auth, (req, res) => getOrder(req, res))
 
 module.exports = router

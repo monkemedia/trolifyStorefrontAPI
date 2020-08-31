@@ -7,8 +7,8 @@ const {
 } = require('../controller/payments')
 
 // Create new Payment Account
-router.post('/payments', [auth, customerAuth], (req, res) => createPayment(req, res))
+router.post('/:storeHash/payments', [auth, customerAuth], (req, res) => createPayment(req, res))
 // Get payment
-router.get('/payments/:paymentId', [auth, customerAuth], (req, res) => getPayment(req, res))
+router.get('/:storeHash/payments/:paymentId', [auth, customerAuth], (req, res) => getPayment(req, res))
 
 module.exports = router

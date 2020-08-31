@@ -10,14 +10,14 @@ const {
 } = require('../../../controller/customers/addresses')
 
 // Create address
-router.post('/me/customers/addresses', auth, (req, res) => createCustomerAddress(req, res))
+router.post('/:storeHash/me/customers/addresses', auth, (req, res) => createCustomerAddress(req, res))
 // Get addresses
-router.get('/me/customers/addresses', auth, (req, res) => getCustomerAddresses(req, res))
+router.get('/:storeHash/me/customers/addresses', auth, (req, res) => getCustomerAddresses(req, res))
 // Get address
-router.get('/me/customers/addresses/:addressId', auth, (req, res) => getCustomerAddress(req, res))
+router.get('/:storeHash/me/customers/addresses/:addressId', auth, (req, res) => getCustomerAddress(req, res))
 // Update address
-router.put('/me/customers/addresses/:addressId', auth, (req, res) => updateCustomerAddress(req, res))
+router.put('/:storeHash/me/customers/addresses/:addressId', auth, (req, res) => updateCustomerAddress(req, res))
 // Delete address
-router.delete('/me/customers/addresses/:addressId', auth, (req, res) => deleteCustomerAddress(req, res))
+router.delete('/:storeHash/me/customers/addresses/:addressId', auth, (req, res) => deleteCustomerAddress(req, res))
 
 module.exports = router

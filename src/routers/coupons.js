@@ -4,6 +4,6 @@ const { auth } = require('../middleware/auth')
 const { getCouponByCode } = require('../controller/coupons')
 
 // Get couponByCode
-router.get('/coupons/:couponCode', auth, (req, res) => getCouponByCode(req, res))
+router.get('/:storeHash/coupons/:couponCode', auth, (req, res) => getCouponByCode(req, res))
 
 module.exports = router
