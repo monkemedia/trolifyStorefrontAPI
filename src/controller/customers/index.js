@@ -101,9 +101,7 @@ const getCustomerTokens = async (req, res) => {
       })
     }
 
-    console.log('get customer')
     const customer = await customerInstance.findByEmailAddress(email)
-    console.log('got customer', customer)
 
     if (!customer) {
       return res.status(401).send(errorHandler(401, 'Sorry, we can’t find an account with this email.'))
@@ -175,10 +173,11 @@ const getCustomer = async (req, res) => {
           foreignField: '_id',
           as: 'addresses'
         }
+      }, {
+        $unset: 'password'
       }
-    ])
 
-  console.log(customer[0])
+    ])
 
   res.status(200).send(customer[0])
 }
