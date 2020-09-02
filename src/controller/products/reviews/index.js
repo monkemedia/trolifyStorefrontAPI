@@ -28,13 +28,13 @@ const createProductReview = async (req, res) => {
   }
 
   try {
-    const productReview = new ProductReview({
+    const productReview = new ProductReview()({
       product_id: productId,
       ...data
     })
     await productReview.save()
 
-    await Product.updateOne({ _id: productId }, {
+    await Product().updateOne({ _id: productId }, {
       $push: {
         reviews: productReview._id
       },
@@ -55,12 +55,13 @@ const getProductReviews = async (req, res) => {
   let productReviews
 
   try {
+    const productReview = ProductReview()
     const productId = req.params.productId
 
     if (keyword) {
-      productReviews = await ProductReview.search({ page, keyword, limit })
+      productReviews = await productReview.search({ page, keyword, limit })
     } else {
-      productReviews = await ProductReview.findProductReviews({page, limit, productId})
+      productReviews = await productReview.findProductReviews({ page, limit, productId })
     }
 
     res.status(200).send(productReviews)
@@ -72,7 +73,7 @@ const getProductReviews = async (req, res) => {
 const getProductReview = async (req, res) => {
   const reviewId = req.params.reviewId
   const productId = req.params.productId
-  const productReview = await ProductReview.findOne({ _id: reviewId, product_id: productId })
+  const productReview = await ProductReview().findOne({ _id: reviewId, product_id: productId })
 
   res.status(200).send(productReview)
 }
@@ -96,10 +97,11 @@ const updateProductReview = async (req, res) => {
   }
 
   try {
-    await ProductReview.updateProductReview(reviewId, data)
-    const productReview = await ProductReview.findOne({ _id: reviewId, product_id: productId })
+    const productReview = ProductReview()
+    await productReview.updateProductReview(reviewId, data)
+    const productReviewResponse = await productReview.findOne({ _id: reviewId, product_id: productId })
 
-    res.status(200).send(productReview)
+    res.status(200).send(productReviewResponse)
   } catch (err) {
     res.status(400).send(err)
   }
@@ -110,7 +112,7 @@ const deleteProductReview = async (req, res) => {
     const reviewId = req.params.reviewId
     const productId = req.params.productId
 
-    await ProductReview.deleteProductReview(reviewId, productId)
+    await ProductReview().deleteProductReview(reviewId, productId)
 
     res.status(200).send({
       message: 'Product review successfully deleted'

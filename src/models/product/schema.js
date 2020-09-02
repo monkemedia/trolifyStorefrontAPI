@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const productSchema = Schema({
+const ProductSchema = Schema({
   type: {
     type: String
   },
@@ -110,4 +110,4 @@ const productSchema = Schema({
   }
 }, { versionKey: false })
 
-module.exports = productSchema
+module.exports = ProductSchema

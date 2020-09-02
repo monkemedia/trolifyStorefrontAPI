@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const couponSchema = Schema({
+const CouponSchema = Schema({
   type: {
     type: String
   },
@@ -41,4 +41,4 @@ const couponSchema = Schema({
   }
 }, { versionKey: false })
 
-module.exports = couponSchema
+module.exports = CouponSchema

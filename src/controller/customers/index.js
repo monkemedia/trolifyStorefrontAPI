@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const Customer = require('../../models/customer')
@@ -8,9 +9,10 @@ const errorHandler = require('../../utils/errorHandler')
 const createCustomer = async (req, res) => {
   try {
     // Check to see if customer already exists
+    const customer = Customer()
     const data = req.body
     const { first_name, last_name, email, password, type } = data
-    const customerExists = await Customer.findByEmailAddress(email)
+    const customerExists = await customer.findByEmailAddress(email)
 
     if (!type) {
       return res.status(401).send({
@@ -54,8 +56,8 @@ const createCustomer = async (req, res) => {
       })
     }
 
-    const customer = new Customer(data)
-    const token = await customer.generateVerifyToken('1hr')
+    const customerResponse = new Customer()(data)
+    const token = await customerResponse.generateVerifyToken('1hr')
     customer.verify_token = token
     await customer.save()
     await emailTemplate.verifyEmailAddress({
@@ -64,7 +66,7 @@ const createCustomer = async (req, res) => {
       token
     })
 
-    res.status(201).send(customer)
+    res.status(201).send(customerResponse)
   } catch (err) {
     res.status(400).send(err)
   }
@@ -72,6 +74,7 @@ const createCustomer = async (req, res) => {
 
 const getCustomerTokens = async (req, res) => {
   try {
+    const customerInstance = Customer()
     const { type, email, password } = req.body
 
     if (!type) {
@@ -98,7 +101,9 @@ const getCustomerTokens = async (req, res) => {
       })
     }
 
-    const customer = await Customer.findByEmailAddress(email)
+    console.log('get customer')
+    const customer = await customerInstance.findByEmailAddress(email)
+    console.log('got customer', customer)
 
     if (!customer) {
       return res.status(401).send(errorHandler(401, 'Sorry, we can’t find an account with this email.'))
@@ -114,7 +119,7 @@ const getCustomerTokens = async (req, res) => {
 
     if (!bcrypt.compareSync(password, customer.password)) {
       if (customer.login_attempts < 3) {
-        await Customer.updateOne({ _id: customer._id }, {
+        await customerInstance.updateOne({ _id: customer._id }, {
           login_attempts: customer.login_attempts += 1,
           updated_at: Date.now()
         })
@@ -124,7 +129,7 @@ const getCustomerTokens = async (req, res) => {
 
       // Lock customer out of account
 
-      await Customer.updateOne({ _id: customer._id }, {
+      await customerInstance.updateOne({ _id: customer._id }, {
         login_attempts: 0,
         lock_until: Date.now() + (30 * 60000), // 30 mins from now
         updated_at: Date.now()
@@ -135,7 +140,7 @@ const getCustomerTokens = async (req, res) => {
 
     const customerToken = await customer.generateToken('24hrs')
 
-    await Customer.updateOne({ _id: customer._id }, {
+    await customerInstance.updateOne({ _id: customer._id }, {
       login_attempts: 0,
       lock_until: null,
       updated_at: Date.now()
@@ -155,15 +160,31 @@ const getCustomerTokens = async (req, res) => {
 
 const getCustomer = async (req, res) => {
   const custId = await customerId(req)
-  const customer = await Customer
-    .findOne({ _id: custId })
-    .populate('addresses')
-    .select('-password')
+  const customer = await Customer()
+    .aggregate([
+      {
+        $match: { _id: mongoose.Types.ObjectId(custId) }
+      },
+      {
+        $limit: 1
+      },
+      {
+        $lookup: {
+          from: 'customeraddresses',
+          localField: 'addresses',
+          foreignField: '_id',
+          as: 'addresses'
+        }
+      }
+    ])
 
-  res.status(200).send(customer)
+  console.log(customer[0])
+
+  res.status(200).send(customer[0])
 }
 
 const updateCustomer = async (req, res) => {
+  const customerInstance = Customer()
   const data = req.body
   const { type } = data
   const custId = await customerId(req)
@@ -181,8 +202,8 @@ const updateCustomer = async (req, res) => {
   }
 
   try {
-    await Customer.updateCustomer(custId, data)
-    const customer = await Customer.findOne({ _id: custId }).select('-password')
+    await customerInstance.updateCustomer(custId, data)
+    const customer = await customerInstance.findOne({ _id: custId }).select('-password')
 
     res.status(200).send(customer)
   } catch (err) {
@@ -193,7 +214,7 @@ const updateCustomer = async (req, res) => {
 const deleteCustomer = async (req, res) => {
   try {
     const custId = await customerId(req)
-    await Customer.deleteCustomer(custId)
+    await Customer().deleteCustomer(custId)
 
     res.status(204).send({
       message: 'Customer successfully deleted'
@@ -220,7 +241,7 @@ const resendVerificationEmail = async (req, res) => {
       })
     }
 
-    const customer = await Customer.findOne({ _id: req.params.customerId }).select('-password')
+    const customer = await Customer().findOne({ _id: req.params.customerId }).select('-password')
     const token = await customer.generateVerifyToken('1hr')
 
     customer.verify_token = token
@@ -257,7 +278,7 @@ const verifyCustomer = async (req, res) => {
     try {
       jwt.verify(verify_token, process.env.VERIFY_SECRET)
 
-      const customer = await Customer.verifyToken(verify_token)
+      const customer = await Customer().verifyToken(verify_token)
 
       if (!customer) {
         // customer doesn't exist but we can't tell users that

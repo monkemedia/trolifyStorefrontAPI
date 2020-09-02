@@ -1,14 +1,15 @@
-const mongoose = require('mongoose')
-const categorySchema = require('./schema')
+const { tenantModel } = require('../../utils/multitenancy')
+const CategorySchema = require('./schema')
 
 // Get categories
-categorySchema.statics.findCategories = async ({ page, limit }) => {
-  const categories = await Category
+CategorySchema.statics.findCategories = async ({ page, limit }) => {
+  const category = Category()
+  const categories = await category
     .find({})
     .skip((page - 1) * limit)
     .limit(limit)
 
-  const total = await Category.countDocuments()
+  const total = await category.countDocuments()
   return {
     data: categories,
     meta: {
@@ -23,6 +24,7 @@ categorySchema.statics.findCategories = async ({ page, limit }) => {
   }
 }
 
-const Category = mongoose.model('Category', categorySchema)
-
+const Category = function () {
+  return tenantModel('Category', CategorySchema)
+}
 module.exports = Category

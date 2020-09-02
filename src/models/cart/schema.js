@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const cartSchema = new Schema({
+const CartSchema = new Schema({
   type: {
     type: String,
     required: true
@@ -201,4 +201,4 @@ const cartSchema = new Schema({
   }
 }, { versionKey: false })
 
-module.exports = cartSchema
+module.exports = CartSchema

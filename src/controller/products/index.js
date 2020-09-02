@@ -22,7 +22,7 @@ const getProducts = async (req, res) => {
     const custom_fields = query && query.custom_fields
     const options = query && query.options
     const rating = query && query.rating
-    const products = await Product
+    const products = await Product()
       .findProducts({
         page,
         limit,
@@ -47,7 +47,7 @@ const getProducts = async (req, res) => {
 
 const getProduct = async (req, res) => {
   const productId = req.params.productId
-  const product = await Product.findProduct(productId)
+  const product = await Product().findProduct(productId)
 
   res.status(200).send(product)
 }

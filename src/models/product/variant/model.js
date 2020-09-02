@@ -1,5 +1,6 @@
-const mongoose = require('mongoose')
-const productVariantSchema = require('./schema')
-const ProductVariants = mongoose.model('ProductVariants', productVariantSchema)
-
-module.exports = ProductVariants
+const ProductVariantSchema = require('./schema')
+const { tenantModel } = require('../../../utils/multitenancy')
+const ProductVariant = function () {
+  return tenantModel('ProductVariant', ProductVariantSchema)
+}
+module.exports = ProductVariant

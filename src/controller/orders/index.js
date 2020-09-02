@@ -41,7 +41,7 @@ const createOrder = async (req, res) => {
   }
 
   try {
-    const order = new Order(data)
+    const order = new Order()(data)
 
     await order.save()
 
@@ -62,11 +62,13 @@ const createOrder = async (req, res) => {
 const getOrders = async (req, res) => {
   try {
     const query = req.query
-    const page = parseInt(query.page)
-    const limit = parseInt(query.limit)
+    const page = parseInt(query.page) || 1
+    const limit = parseInt(query.limit) || 20
     const custId = await customerId(req)
 
-    const orders = await Order.findOrdersByCustomerId({ page, limit, customerId: custId })
+    console.log('cust id', custId)
+
+    const orders = await Order().findOrdersByCustomerId({ page, limit, customerId: custId })
 
     res.status(200).send(orders)
   } catch (err) {
@@ -76,15 +78,16 @@ const getOrders = async (req, res) => {
 
 const getOrder = async (req, res) => {
   const orderId = req.params.orderId
+  const order = Order()
 
-  let order
+  let orderResponse
   if (orderId === 'count') {
-    order = await Order.getCount()
+    orderResponse = await order.getCount()
   } else {
-    order = await Order.findOne({ id: req.params.orderId })
+    orderResponse = await order.findOne({ id: req.params.orderId })
   }
 
-  res.status(200).send(order)
+  res.status(200).send(orderResponse)
 }
 
 module.exports = {

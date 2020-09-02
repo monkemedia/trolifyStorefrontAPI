@@ -71,11 +71,11 @@ const createCustomerAddress = async (req, res) => {
   }
 
   try {
-    const customerAddress = new CustomerAddress({ ...data, customer_id: custId })
+    const customerAddress = new CustomerAddress()({ ...data, customer_id: custId })
 
     await customerAddress.save()
 
-    const customer = await Customer.findById(custId)
+    const customer = await Customer().findById(custId)
     customer.addresses.push(customerAddress._id)
 
     await customer.save()
@@ -89,7 +89,7 @@ const createCustomerAddress = async (req, res) => {
 const getCustomerAddresses = async (req, res) => {
   try {
     const custId = await customerId(req)
-    const customerAddresses = await CustomerAddress.findCustomerAddresses(custId)
+    const customerAddresses = await CustomerAddress().findCustomerAddresses(custId)
 
     res.status(200).send(customerAddresses)
   } catch (err) {
@@ -100,7 +100,7 @@ const getCustomerAddresses = async (req, res) => {
 const getCustomerAddress = async (req, res) => {
   try {
     const addressId = req.params.addressId
-    const customerAddress = await CustomerAddress.findCustomerAddress(addressId)
+    const customerAddress = await CustomerAddress().findCustomerAddress(addressId)
 
     res.status(200).send(customerAddress)
   } catch (err) {
@@ -126,8 +126,8 @@ const updateCustomerAddress = async (req, res) => {
   }
 
   try {
-    await CustomerAddress.updateCustomerAddress(addressId, data)
-    const customerAddress = await CustomerAddress.findCustomerAddress(addressId)
+    await CustomerAddress().updateCustomerAddress(addressId, data)
+    const customerAddress = await CustomerAddress().findCustomerAddress(addressId)
 
     res.status(200).send(customerAddress)
   } catch (err) {
@@ -139,10 +139,10 @@ const deleteCustomerAddress = async (req, res) => {
   try {
     const custId = await customerId(req)
     const addressId = req.params.addressId
-    const customer = await Customer.findById(custId)
+    const customer = await Customer().findById(custId)
 
     customer.addresses.pull(addressId)
-    await CustomerAddress.deleteCustomerAddress(addressId)
+    await CustomerAddress().deleteCustomerAddress(addressId)
 
     res.status(200).send({
       message: 'Customer Address successfully deleted'

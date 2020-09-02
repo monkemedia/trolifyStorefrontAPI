@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const customerWishlistSchema = new Schema({
+const CustomerWishlistSchema = new Schema({
   type: {
     type: String,
     required: true
@@ -20,4 +20,4 @@ const customerWishlistSchema = new Schema({
   }
 }, { versionKey: false })
 
-module.exports = customerWishlistSchema
+module.exports = CustomerWishlistSchema

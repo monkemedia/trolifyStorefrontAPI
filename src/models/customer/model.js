@@ -1,10 +1,10 @@
-const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const customerSchema = require('./schema.js')
+const CustomerSchema = require('./schema.js')
+const { tenantModel } = require('../../utils/multitenancy')
 
 // Hash the password before saving the customer model
-customerSchema.pre('save', async function (next) {
+CustomerSchema.pre('save', async function (next) {
   const customer = this
 
   if (customer.isModified('password')) {
@@ -14,7 +14,7 @@ customerSchema.pre('save', async function (next) {
 })
 
 // Generate customer verify token
-customerSchema.methods.generateVerifyToken = async function (expiresIn) {
+CustomerSchema.methods.generateVerifyToken = async function (expiresIn) {
   const customer = this
   const verifyToken = jwt.sign({
     email: customer.email
@@ -24,7 +24,7 @@ customerSchema.methods.generateVerifyToken = async function (expiresIn) {
 }
 
 // Generate an token for customer
-customerSchema.methods.generateToken = async function (expiresIn) {
+CustomerSchema.methods.generateToken = async function (expiresIn) {
   const customer = this
   const accessToken = jwt.sign({
     _id: customer._id
@@ -34,15 +34,15 @@ customerSchema.methods.generateToken = async function (expiresIn) {
 }
 
 // Find customer by email address
-customerSchema.statics.findByEmailAddress = async (email) => {
-  const customer = await Customer.findOne({ email })
+CustomerSchema.statics.findByEmailAddress = async (email) => {
+  const customer = await Customer().findOne({ email })
 
   return customer
 }
 
 // Find customer by verify token
-customerSchema.statics.verifyToken = async (verify_token) => {
-  const customer = await Customer.updateOne({ verify_token }, {
+CustomerSchema.statics.verifyToken = async (verify_token) => {
+  const customer = await Customer().updateOne({ verify_token }, {
     verified: true,
     verify_token: null
   })
@@ -51,10 +51,10 @@ customerSchema.statics.verifyToken = async (verify_token) => {
 }
 
 // Update customer
-customerSchema.statics.updateCustomer = async (customerId, customerDetails) => {
+CustomerSchema.statics.updateCustomer = async (customerId, customerDetails) => {
   let { password } = customerDetails
 
-  const savedPassword = await Customer.findOne({ _id: customerId }).select('password')
+  const savedPassword = await Customer().findOne({ _id: customerId }).select('password')
 
   if (!password) {
     password = savedPassword.password
@@ -62,16 +62,17 @@ customerSchema.statics.updateCustomer = async (customerId, customerDetails) => {
     password = await bcrypt.hash(password, 8)
   }
 
-  const customer = await Customer.updateOne({ _id: customerId }, { ...customerDetails, password })
+  const customer = await Customer().updateOne({ _id: customerId }, { ...customerDetails, password })
   return customer
 }
 
 // Delete customer by id
-customerSchema.statics.deleteCustomer = async (_id) => {
-  const customer = await Customer.deleteOne({ _id })
+CustomerSchema.statics.deleteCustomer = async (_id) => {
+  const customer = await Customer().deleteOne({ _id })
   return customer
 }
 
-const Customer = mongoose.model('Customer', customerSchema)
-
+const Customer = function () {
+  return tenantModel('Customer', CustomerSchema)
+}
 module.exports = Customer

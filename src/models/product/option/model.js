@@ -1,5 +1,6 @@
-const mongoose = require('mongoose')
-const productOptionSchema = require('./schema')
-const ProductOptions = mongoose.model('ProductOptions', productOptionSchema)
-
-module.exports = ProductOptions
+const ProductOptionSchema = require('./schema')
+const { tenantModel } = require('../../../utils/multitenancy')
+const ProductOption = function () {
+  return tenantModel('ProductOption', ProductOptionSchema)
+}
+module.exports = ProductOption
