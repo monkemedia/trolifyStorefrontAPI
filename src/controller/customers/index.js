@@ -21,7 +21,7 @@ const createCustomer = async (req, res) => {
       })
     }
 
-    if (type && type !== 'customers') {
+    if (type && type !== 'customer') {
       return res.status(401).send({
         message: 'Correct type is required'
       })
