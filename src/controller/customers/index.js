@@ -189,7 +189,7 @@ const updateCustomer = async (req, res) => {
   const customerInstance = Customer()
   const data = req.body
   const { type } = data
-  const custId = await customerId(req)
+  const custId = session.get('cust_id')
 
   if (!type) {
     return res.status(401).send({
@@ -197,7 +197,7 @@ const updateCustomer = async (req, res) => {
     })
   }
 
-  if (type && type !== 'customers') {
+  if (type && type !== 'customer') {
     return res.status(401).send({
       message: 'Correct type is required'
     })
@@ -215,7 +215,7 @@ const updateCustomer = async (req, res) => {
 
 const deleteCustomer = async (req, res) => {
   try {
-    const custId = await customerId(req)
+    const custId = session.get('cust_id')
     await Customer().deleteCustomer(custId)
 
     res.status(204).send({

@@ -41,7 +41,7 @@ const createCustomerWishlist = async (req, res) => {
 
 const getCustomerWishlists = async (req, res) => {
   try {
-    const custId = await customerId(req)
+    const custId = session.get('cust_id')
     const customerWishlistes = await CustomerWishlist.findCustomerWishlists(custId)
 
     res.status(200).send(customerWishlistes)

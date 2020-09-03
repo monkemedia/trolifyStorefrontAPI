@@ -90,7 +90,7 @@ const createCustomerAddress = async (req, res) => {
 
 const getCustomerAddresses = async (req, res) => {
   try {
-    const custId = await customerId(req)
+    const custId = session.get('cust_id')
     const customerAddresses = await CustomerAddress().findCustomerAddresses(custId)
 
     res.status(200).send(customerAddresses)
@@ -139,7 +139,7 @@ const updateCustomerAddress = async (req, res) => {
 
 const deleteCustomerAddress = async (req, res) => {
   try {
-    const custId = await customerId(req)
+    const custId = session.get('cust_id')
     const addressId = req.params.addressId
     const customer = await Customer().findById(custId)
 

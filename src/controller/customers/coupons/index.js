@@ -1,3 +1,5 @@
+const cls = require('continuation-local-storage')
+const session = cls.getNamespace('session')
 const CustomerCoupon = require('../../../models/customer/coupon')
 
 const createCustomerCoupon = async (req, res) => {
@@ -6,7 +8,7 @@ const createCustomerCoupon = async (req, res) => {
     type,
     coupon_id
   } = data
-  const customer_id = req.params.customerId
+  const custId = session.get('cust_id')
 
   if (!type) {
     return res.status(401).send({
@@ -27,9 +29,9 @@ const createCustomerCoupon = async (req, res) => {
   }
 
   try {
-    const customerCoupon = new CustomerCoupon({
+    const customerCoupon = new CustomerCoupon()({
       ...data,
-      customer_id,
+      customer_id: custId,
       uses: 1
     })
 
@@ -43,8 +45,8 @@ const createCustomerCoupon = async (req, res) => {
 
 const getCustomerCoupons = async (req, res) => {
   try {
-    const customerId = req.params.customerId
-    const customerCoupons = await CustomerCoupon.findCustomerCoupons(customerId)
+    const custId = session.get('cust_id')
+    const customerCoupons = await CustomerCoupon().findCustomerCoupons(custId)
 
     res.status(200).send(customerCoupons)
   } catch (err) {
@@ -54,9 +56,9 @@ const getCustomerCoupons = async (req, res) => {
 
 const getCustomerCoupon = async (req, res) => {
   try {
-    const customerId = req.params.customerId
+    const custId = session.get('cust_id')
     const couponId = req.params.couponId
-    const customerCoupon = await CustomerCoupon.findCustomerCoupon(customerId, couponId)
+    const customerCoupon = await CustomerCoupon().findCustomerCoupon(custId, couponId)
 
     res.status(200).send(customerCoupon)
   } catch (err) {
@@ -65,12 +67,12 @@ const getCustomerCoupon = async (req, res) => {
 }
 
 const incrementCustomerCoupon = async (req, res) => {
-  const customerId = req.params.customerId
+  const custId = session.get('cust_id')
   const couponId = req.params.couponId
 
   try {
-    await CustomerCoupon.incrementCustomerCoupon(customerId, couponId)
-    const customerCoupon = await CustomerCoupon.findCustomerCoupon(customerId, couponId)
+    await CustomerCoupon().incrementCustomerCoupon(custId, couponId)
+    const customerCoupon = await CustomerCoupon().findCustomerCoupon(custId, couponId)
 
     res.status(200).send(customerCoupon)
   } catch (err) {
