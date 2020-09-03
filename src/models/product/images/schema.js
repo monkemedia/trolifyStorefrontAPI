@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const productImageSchema = new Schema({
+const ProductImageSchema = new Schema({
   type: {
     type: String
   },
@@ -25,4 +25,4 @@ const productImageSchema = new Schema({
   }
 }, { versionKey: false })
 
-module.exports = productImageSchema
+module.exports = ProductImageSchema

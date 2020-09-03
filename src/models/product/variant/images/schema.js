@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const productVariantImageSchema = new Schema({
+const ProductVariantImageSchema = new Schema({
   type: {
     type: String
   },
@@ -22,4 +22,4 @@ const productVariantImageSchema = new Schema({
   }
 }, { versionKey: false })
 
-module.exports = productVariantImageSchema
+module.exports = ProductVariantImageSchema

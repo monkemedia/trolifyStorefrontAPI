@@ -1,5 +1,6 @@
-const mongoose = require('mongoose')
-const brandSchema = require('./schema')
-const Brand = mongoose.model('Brand', brandSchema)
-
+const { tenantModel } = require('../../utils/multitenancy')
+const BrandSchema = require('./schema')
+const Brand = function () {
+  return tenantModel('Brand', BrandSchema)
+}
 module.exports = Brand

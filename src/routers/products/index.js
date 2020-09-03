@@ -7,8 +7,8 @@ const {
 } = require('../../controller/products')
 
 // Get products
-router.get('/products', auth, (req, res) => getProducts(req, res))
+router.get('/:storeHash/products', auth, (req, res) => getProducts(req, res))
 // Get product
-router.get('/products/:productId', auth, (req, res) => getProduct(req, res))
+router.get('/:storeHash/products/:productId', auth, (req, res) => getProduct(req, res))
 
 module.exports = router

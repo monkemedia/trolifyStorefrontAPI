@@ -1,11 +1,9 @@
 const mongoose = require('mongoose')
-const deepPopulate = require('mongoose-deep-populate')(mongoose)
-const productSchema = require('./schema')
-
-productSchema.plugin(deepPopulate)
+const ProductSchema = require('./schema')
+const { tenantModel } = require('../../utils/multitenancy')
 
 // Get all products
-productSchema.statics.findProducts = async ({
+ProductSchema.statics.findProducts = async ({
   page,
   limit,
   keyword,
@@ -174,7 +172,8 @@ productSchema.statics.findProducts = async ({
     })
   }
 
-  const products = await Product
+  const product = new Product()
+  const products = await product
     .aggregate([
       {
         $lookup: {
@@ -194,38 +193,6 @@ productSchema.statics.findProducts = async ({
       },
       {
         $lookup: {
-          from: 'categories',
-          localField: 'categories',
-          foreignField: '_id',
-          as: 'categories'
-        }
-      },
-      {
-        $lookup: {
-          from: 'productoptions',
-          localField: 'options',
-          foreignField: '_id',
-          as: 'options'
-        }
-      },
-      {
-        $lookup: {
-          from: 'brands',
-          localField: 'brand_id',
-          foreignField: '_id',
-          as: 'brand_id'
-        }
-      },
-      {
-        $lookup: {
-          from: 'customfields',
-          localField: 'custom_fields',
-          foreignField: '_id',
-          as: 'custom_fields'
-        }
-      },
-      {
-        $lookup: {
           from: 'productreviews',
           localField: 'reviews',
           foreignField: '_id',
@@ -234,20 +201,17 @@ productSchema.statics.findProducts = async ({
       },
       {
         $addFields: {
-          reviews_rating_sum: { $avg: '$reviews.rating' },
+          reviews_rating_average: { $ifNull: [{ $avg: '$reviews.rating' }, 0] },
           reviews_count: { $size: '$reviews' }
         }
       },
-      { $unwind: '$brand_id' },
-      { $match: query },
-      { $sort: sortObj },
+      { $sort: { created_at: -1 } },
       { $skip: (page - 1) * limit },
       { $limit: limit }
     ])
 
-  const total = await Product
+  const total = await product
     .find(query)
-    .sort(sortObj)
     .countDocuments()
   return {
     data: products,
@@ -264,14 +228,44 @@ productSchema.statics.findProducts = async ({
 }
 
 // Get product
-productSchema.statics.findProduct = async (_id) => {
-  const product = await Product
-    .findOne({ _id })
-    .populate('images options custom_fields')
-    .deepPopulate('variants.images')
-  return product
+ProductSchema.statics.findProduct = async (id) => {
+  const product = await Product()
+    .aggregate([
+      {
+        $match: { _id: mongoose.Types.ObjectId(id) }
+      },
+      {
+        $limit: 1
+      },
+      {
+        $lookup: {
+          from: 'productimages',
+          localField: 'images',
+          foreignField: '_id',
+          as: 'images'
+        }
+      },
+      {
+        $lookup: {
+          from: 'productvariants',
+          localField: 'variants',
+          foreignField: '_id',
+          as: 'variants'
+        }
+      },
+      {
+        $lookup: {
+          from: 'productreviews',
+          localField: 'reviews',
+          foreignField: '_id',
+          as: 'reviews'
+        }
+      }
+    ])
+  return product[0]
 }
 
-const Product = mongoose.model('Product', productSchema)
-
+const Product = function () {
+  return tenantModel('Product', ProductSchema)
+}
 module.exports = Product

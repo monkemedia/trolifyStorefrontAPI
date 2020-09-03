@@ -38,18 +38,6 @@ const createPayment = async (req, res) => {
   }
 }
 
-const getPayment = async (req, res) => {
-  const id = req.params.paymentId
-  try {
-    const payment = await stripe.charges.retrieve(id)
-
-    res.status(200).send(payment)
-  } catch (err) {
-    res.status(400).send(errorHandler(400, err))
-  }
-}
-
 module.exports = {
-  createPayment,
-  getPayment
+  createPayment
 }

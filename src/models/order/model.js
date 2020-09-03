@@ -1,10 +1,11 @@
 const mongoose = require('mongoose')
-const orderSchema = require('./schema')
+const OrderSchema = require('./schema')
 const Product = require('../product/index.js')
 const ProductVariants = require('../product/variant/index.js')
+const { tenantModel } = require('../../utils/multitenancy')
 const AutoIncrement = require('mongoose-sequence')(mongoose)
 
-orderSchema.plugin(AutoIncrement, {
+OrderSchema.plugin(AutoIncrement, {
   inc_field: 'id',
   start_seq: 100
 })
@@ -45,7 +46,7 @@ async function stockLevelHandler (product) {
 }
 
 // Check stock before creating order
-orderSchema.pre('save', async function (next) {
+OrderSchema.pre('save', async function (next) {
   const order = this
   const orderProducts = order.products
 
@@ -81,8 +82,9 @@ orderSchema.pre('save', async function (next) {
 })
 
 // Get orders by customer id
-orderSchema.statics.findOrdersByCustomerId = async ({ page, limit, customerId }) => {
-  const orders = await Order
+OrderSchema.statics.findOrdersByCustomerId = async ({ page, limit, customerId }) => {
+  const order = Order()
+  const orders = await order
     .find({
       customer_id: customerId
     })
@@ -90,7 +92,9 @@ orderSchema.statics.findOrdersByCustomerId = async ({ page, limit, customerId })
     .skip((page - 1) * limit)
     .limit(limit)
 
-  const total = await Order.countDocuments()
+  console.log('orders', orders)
+
+  const total = await order.countDocuments()
   return {
     data: orders,
     meta: {
@@ -106,13 +110,13 @@ orderSchema.statics.findOrdersByCustomerId = async ({ page, limit, customerId })
 }
 
 // Update order
-orderSchema.statics.updateOrder = async (orderId, orderDetails) => {
-  // const currentOrderQty =
+OrderSchema.statics.updateOrder = async (orderId, orderDetails) => {
+  const order = Order()
   const orderProducts = orderDetails.products
 
   if (orderProducts) {
     const promise = await orderProducts.map(async orderProduct => {
-      const storedOrder = await Order.findOne({ id: orderId })
+      const storedOrder = await order.findOne({ id: orderId })
       const storedOrderProduct = storedOrder.products.find((order) => {
         return order._id.toString() === orderProduct._id
       })
@@ -153,16 +157,17 @@ orderSchema.statics.updateOrder = async (orderId, orderDetails) => {
 
     await Promise.all(promise)
   }
-  const order = await Order.updateOne({ id: orderId }, orderDetails)
-  return order
+  const orderResponse = await order.updateOne({ id: orderId }, orderDetails)
+  return orderResponse
 }
 
 // Delete order
-orderSchema.statics.deleteOrder = async (orderId) => {
-  const order = await Order.deleteOne({ id: orderId })
+OrderSchema.statics.deleteOrder = async (orderId) => {
+  const order = await Order().deleteOne({ id: orderId })
   return order
 }
 
-const Order = mongoose.model('Order', orderSchema)
-
+const Order = function () {
+  return tenantModel('Order', OrderSchema)
+}
 module.exports = Order

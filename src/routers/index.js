@@ -11,6 +11,7 @@ const productFiltering = require('./productFiltering.js')
 const payments = require('./payments.js')
 const products = require('./products/index.js')
 const orders = require('./orders/index.js')
+const orderStatuses = require('./orders/orderStatus/index.js')
 const router = Router()
 
 router.use(
@@ -25,7 +26,8 @@ router.use(
   productFiltering,
   payments,
   products,
-  orders
+  orders,
+  orderStatuses
 )
 
 module.exports = router

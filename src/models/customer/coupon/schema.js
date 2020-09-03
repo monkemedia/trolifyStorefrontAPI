@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const customerCouponSchema = new Schema({
+const CustomerCouponSchema = new Schema({
   type: {
     type: String,
     required: true
@@ -20,4 +20,4 @@ const customerCouponSchema = new Schema({
   }
 }, { versionKey: false })
 
-module.exports = customerCouponSchema
+module.exports = CustomerCouponSchema

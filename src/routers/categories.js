@@ -7,8 +7,8 @@ const {
 } = require('../controller/categories')
 
 // Get categories
-router.get('/categories', auth, (req, res) => getCategories(req, res))
+router.get('/:storeHash/categories', auth, (req, res) => getCategories(req, res))
 // Get category
-router.get('/categories/:categoryId', auth, (req, res) => getCategory(req, res))
+router.get('/:storeHash/categories/:categoryId', auth, (req, res) => getCategory(req, res))
 
 module.exports = router

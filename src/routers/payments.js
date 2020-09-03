@@ -1,14 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const { auth, customerAuth } = require('../middleware/auth')
+const { auth } = require('../middleware/auth')
 const {
-  createPayment,
-  getPayment
+  createPayment
 } = require('../controller/payments')
 
 // Create new Payment Account
-router.post('/payments', [auth, customerAuth], (req, res) => createPayment(req, res))
-// Get payment
-router.get('/payments/:paymentId', [auth, customerAuth], (req, res) => getPayment(req, res))
+router.post('/:storeHash/payments', auth, (req, res) => createPayment(req, res))
 
 module.exports = router

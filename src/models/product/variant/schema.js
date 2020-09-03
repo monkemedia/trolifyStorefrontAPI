@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const productVariantSchema = new Schema({
-  type: {
+const ProductVariantSchema = new Schema({
+  typP: {
     type: String
   },
   price: {
@@ -49,4 +49,4 @@ const productVariantSchema = new Schema({
   ]
 }, { versionKey: false })
 
-module.exports = productVariantSchema
+module.exports = ProductVariantSchema

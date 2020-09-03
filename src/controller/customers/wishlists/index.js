@@ -1,4 +1,5 @@
-const customerId = require('../../../utils/customerId')
+const cls = require('continuation-local-storage')
+const session = cls.getNamespace('session')
 const CustomerWishlist = require('../../../models/customer/wishlist')
 
 const createCustomerWishlist = async (req, res) => {
@@ -7,7 +8,7 @@ const createCustomerWishlist = async (req, res) => {
     type,
     name
   } = data
-  const custId = await customerId(req)
+  const custId = session.get('cust_id')
 
   if (!type) {
     return res.status(401).send({
@@ -40,7 +41,7 @@ const createCustomerWishlist = async (req, res) => {
 
 const getCustomerWishlists = async (req, res) => {
   try {
-    const custId = await customerId(req)
+    const custId = session.get('cust_id')
     const customerWishlistes = await CustomerWishlist.findCustomerWishlists(custId)
 
     res.status(200).send(customerWishlistes)

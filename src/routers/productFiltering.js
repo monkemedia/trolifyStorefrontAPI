@@ -7,7 +7,7 @@ const {
 } = require('../controller/productFiltering')
 
 // Get filters
-router.get('/product-filtering', auth, (req, res) => getFacets(req, res))
+router.get('/:storeHash/product-filtering', auth, (req, res) => getFacets(req, res))
 
 // Get filter
 // router.get('/product-filters/:filterName', auth, (req, res) => getFilterByName(req, res))

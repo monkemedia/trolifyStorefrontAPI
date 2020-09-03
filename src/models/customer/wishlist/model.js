@@ -1,30 +1,31 @@
-const mongoose = require('mongoose')
-const customerWishlistSchema = require('./schema')
+const CustomerWishlistSchema = require('./schema')
+const { tenantModel } = require('../../../utils/multitenancy')
 
 // Find wishlists
-customerWishlistSchema.statics.findCustomerWishlists = async (customerId) => {
-  const wishlists = await CustomerWishlist.find({ customer_id: customerId })
+CustomerWishlistSchema.statics.findCustomerWishlists = async (customerId) => {
+  const wishlists = await CustomerWishlist().find({ customer_id: customerId })
   return wishlists
 }
 
 // Find wishlist
-customerWishlistSchema.statics.findCustomerWishlist = async (wishlistId) => {
-  const wishlist = await CustomerWishlist.findOne({ _id: wishlistId })
+CustomerWishlistSchema.statics.findCustomerWishlist = async (wishlistId) => {
+  const wishlist = await CustomerWishlist().findOne({ _id: wishlistId })
   return wishlist
 }
 
 // Update wishlist
-customerWishlistSchema.statics.updateCustomerWishlist = async (wishlistId, data) => {
-  const wishlist = await CustomerWishlist.updateOne({ _id: wishlistId }, data)
+CustomerWishlistSchema.statics.updateCustomerWishlist = async (wishlistId, data) => {
+  const wishlist = await CustomerWishlist().updateOne({ _id: wishlistId }, data)
   return wishlist
 }
 
 // Delete wishlist
-customerWishlistSchema.statics.deleteCustomerWishlist = async (wishlistId) => {
-  const wishlist = await CustomerWishlist.deleteOne({ _id: wishlistId })
+CustomerWishlistSchema.statics.deleteCustomerWishlist = async (wishlistId) => {
+  const wishlist = await CustomerWishlist().deleteOne({ _id: wishlistId })
   return wishlist
 }
 
-const CustomerWishlist = mongoose.model('CustomerWishlist', customerWishlistSchema)
-
+const CustomerWishlist = function () {
+  return tenantModel('CustomerWishlist', CustomerWishlistSchema)
+}
 module.exports = CustomerWishlist

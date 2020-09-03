@@ -1,5 +1,6 @@
-const mongoose = require('mongoose')
-const productImageSchema = require('./schema')
-const ProductImage = mongoose.model('ProductImage', productImageSchema)
-
+const ProductImageSchema = require('./schema')
+const { tenantModel } = require('../../../utils/multitenancy')
+const ProductImage = function () {
+  return tenantModel('ProductImage', ProductImageSchema)
+}
 module.exports = ProductImage

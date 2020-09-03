@@ -1,21 +1,22 @@
-const mongoose = require('mongoose')
-const cartSchema = require('./schema')
+const { tenantModel } = require('../../utils/multitenancy')
+const CartSchema = require('./schema')
 
 // Get cart
-cartSchema.statics.findCart = async ({ page, limit }) => {
-  const cart = await Cart
+CartSchema.statics.findCart = async ({ page, limit }) => {
+  const cart = Cart()
+  const cartResponse = await cart
     .find({})
     .select('expireAt')
     .skip((page - 1) * limit)
     .limit(limit)
 
-  const total = await Cart.countDocuments()
+  const total = await cart.countDocuments()
   return {
-    data: cart,
+    data: cartResponse,
     meta: {
       pagination: {
         current: page,
-        total: cart.length
+        total: cartResponse.length
       },
       results: {
         total
@@ -25,20 +26,21 @@ cartSchema.statics.findCart = async ({ page, limit }) => {
 }
 
 // Update cart
-cartSchema.statics.updateCart = async (cartId, data) => {
-  const cart = await Cart.updateOne({ _id: cartId }, {
+CartSchema.statics.updateCart = async (cartId, data) => {
+  const cartResponse = await Cart().updateOne({ _id: cartId }, {
     ...data,
     updated_at: Date.now()
   })
-  return cart
+  return cartResponse
 }
 
 // Delete cart
-cartSchema.statics.deleteCart = async (cartId) => {
-  const cart = await Cart.deleteOne({ _id: cartId })
-  return cart
+CartSchema.statics.deleteCart = async (cartId) => {
+  const cartResponse = await Cart().deleteOne({ _id: cartId })
+  return cartResponse
 }
 
-const Cart = mongoose.model('Cart', cartSchema)
-
+const Cart = function () {
+  return tenantModel('Cart', CartSchema)
+}
 module.exports = Cart

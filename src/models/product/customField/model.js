@@ -1,5 +1,6 @@
-const mongoose = require('mongoose')
-const productCustomFieldSchema = require('./schema')
-const ProductCustomFields = mongoose.model('ProductCustomFields', productCustomFieldSchema)
-
-module.exports = ProductCustomFields
+const ProductCustomFieldSchema = require('./schema')
+const { tenantModel } = require('../../../utils/multitenancy')
+const ProductCustomField = function () {
+  return tenantModel('ProductCustomField', ProductCustomFieldSchema)
+}
+module.exports = ProductCustomField

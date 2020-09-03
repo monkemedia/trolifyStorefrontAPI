@@ -17,7 +17,7 @@ const createCart = async (req, res) => {
   }
 
   try {
-    const carts = new Cart(data)
+    const carts = new Cart()(data)
 
     await carts.save()
 
@@ -31,7 +31,7 @@ const getCart = async (req, res) => {
   const cartId = req.params.cartId
 
   try {
-    const cart = await Cart.findOne({ _id: cartId })
+    const cart = await Cart().findOne({ _id: cartId })
     res.status(200).send(cart)
   } catch (err) {
     res.status(400).send(err)
@@ -62,10 +62,11 @@ const updateCart = async (req, res) => {
   }
 
   try {
-    await Cart.updateCart(cartId, data)
-    const cart = await Cart.findOne({ _id: cartId })
+    const cart = Cart()
+    await cart.updateCart(cartId, data)
+    const cartResponse = await cart.findOne({ _id: cartId })
 
-    res.status(200).send(cart)
+    res.status(200).send(cartResponse)
   } catch (err) {
     res.status(400).send(err)
   }
@@ -75,7 +76,7 @@ const deleteCart = async (req, res) => {
   try {
     const cartId = req.params.cartId
 
-    await Cart.deleteCart(cartId)
+    await Cart().deleteCart(cartId)
 
     res.status(200).send({
       message: 'Cart successfully deleted'
