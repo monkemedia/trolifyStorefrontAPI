@@ -1,5 +1,6 @@
+const cls = require('continuation-local-storage')
+const session = cls.getNamespace('session')
 const Order = require('../../models/order/index.js')
-const customerId = require('../../utils/customerId')
 const emailTemplate = require('../../utils/emailTemplate')
 
 const createOrder = async (req, res) => {
@@ -64,9 +65,7 @@ const getOrders = async (req, res) => {
     const query = req.query
     const page = parseInt(query.page) || 1
     const limit = parseInt(query.limit) || 20
-    const custId = await customerId(req)
-
-    console.log('cust id', custId)
+    const custId = session.get('cust_id')
 
     const orders = await Order().findOrdersByCustomerId({ page, limit, customerId: custId })
 

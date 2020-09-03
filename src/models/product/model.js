@@ -172,7 +172,7 @@ ProductSchema.statics.findProducts = async ({
     })
   }
 
-  const product = Product()
+  const product = new Product()
   const products = await product
     .aggregate([
       {

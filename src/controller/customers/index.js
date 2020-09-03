@@ -1,10 +1,11 @@
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
+const cls = require('continuation-local-storage')
 const Customer = require('../../models/customer')
 const emailTemplate = require('../../utils/emailTemplate')
-const customerId = require('../../utils/customerId')
 const errorHandler = require('../../utils/errorHandler')
+const session = cls.getNamespace('session')
 
 const createCustomer = async (req, res) => {
   try {
@@ -157,7 +158,7 @@ const getCustomerTokens = async (req, res) => {
 }
 
 const getCustomer = async (req, res) => {
-  const custId = await customerId(req)
+  const custId = session.get('cust_id')
   const customer = await Customer()
     .aggregate([
       {
@@ -178,6 +179,8 @@ const getCustomer = async (req, res) => {
       }
 
     ])
+
+  console.log('customer', customer)
 
   res.status(200).send(customer[0])
 }

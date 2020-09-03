@@ -1,4 +1,6 @@
-const customerId = require('../../../utils/customerId')
+
+const cls = require('continuation-local-storage')
+const session = cls.getNamespace('session')
 const Customer = require('../../../models/customer')
 const CustomerAddress = require('../../../models/customer/address')
 
@@ -14,7 +16,7 @@ const createCustomerAddress = async (req, res) => {
     postcode,
     country_code
   } = data
-  const custId = customerId(req)
+  const custId = session.get('cust_id')
 
   if (!type) {
     return res.status(401).send({

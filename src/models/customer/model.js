@@ -72,7 +72,7 @@ CustomerSchema.statics.deleteCustomer = async (_id) => {
   return customer
 }
 
-const Customer = function () {
-  return tenantModel('Customer', CustomerSchema)
+const Customer = function (storeHash) {
+  return tenantModel('Customer', CustomerSchema, storeHash)
 }
 module.exports = Customer
