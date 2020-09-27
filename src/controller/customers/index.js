@@ -180,8 +180,6 @@ const getCustomer = async (req, res) => {
 
     ])
 
-  console.log('customer', customer)
-
   res.status(200).send(customer[0])
 }
 

@@ -176,6 +176,9 @@ ProductSchema.statics.findProducts = async ({
   const products = await product
     .aggregate([
       {
+        $match: query
+      },
+      {
         $lookup: {
           from: 'productimages',
           localField: 'images',
@@ -205,9 +208,9 @@ ProductSchema.statics.findProducts = async ({
           reviews_count: { $size: '$reviews' }
         }
       },
-      { $sort: { created_at: -1 } },
       { $skip: (page - 1) * limit },
-      { $limit: limit }
+      { $limit: limit },
+      { $sort: sortObj }
     ])
 
   const total = await product

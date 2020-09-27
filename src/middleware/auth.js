@@ -5,7 +5,6 @@ const { createNamespace } = require('continuation-local-storage')
 const session = createNamespace('session')
 
 const setSession = (storeHash, customerId, req, res, next) => {
-  console.log('customer', customerId)
   session.bindEmitter(req)
   session.bindEmitter(res)
 
