@@ -1,4 +1,4 @@
-const cls = require('continuation-local-storage')
+const cls = require('cls-hooked')
 const session = cls.getNamespace('session')
 const CustomerCoupon = require('../../../models/customer/coupon')
 

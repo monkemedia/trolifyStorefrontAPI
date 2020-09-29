@@ -81,6 +81,12 @@ const ProductSchema = Schema({
       ref: 'ProductCustomFields'
     }
   ],
+  reviews: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'ProductReviews'
+    }
+  ],
   created_at: {
     type: Date
   },

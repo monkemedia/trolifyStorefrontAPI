@@ -7,6 +7,7 @@ ProductSchema.statics.findProducts = async ({
   page,
   limit,
   keyword,
+  filter,
   categories,
   status,
   is_featured,
@@ -23,10 +24,43 @@ ProductSchema.statics.findProducts = async ({
     asc: 1
   }
   const query = {
-    status: status || 'live'
+    status: {
+      $eq: status || 'live'
+    }
   }
   const sortObj = {
     created_at: direction.desc
+  }
+
+  if (filter) {
+    if (filter.brand_id) {
+      Object.keys(filter.brand_id).map(key => {
+        Object.assign(query, {
+          brand_id: {
+            [key]: mongoose.Types.ObjectId(filter.brand_id[key])
+          }
+        })
+      })
+    } else {
+      console.log('filter', filter)
+      Object.keys(filter.reviews_rating_sum).map(key => {
+        Object.assign(query, {
+          reviews_rating_sum: {
+            [key]: parseInt(filter.reviews_rating_sum[key])
+          }
+        })
+      })
+    }
+  }
+
+  if (sort) {
+    delete sortObj.created_at
+    Object.keys(sort).map(key => {
+      const direction = sort[key] === 'asc' ? 1 : -1
+      Object.assign(sortObj, {
+        [key]: direction
+      })
+    })
   }
 
   if (categories) {
@@ -60,13 +94,6 @@ ProductSchema.statics.findProducts = async ({
     Object.assign(query, {
       'brand_id.name': brand_id
     })
-  }
-
-  if (sort) {
-    delete sortObj.created_at
-    const splitSort = sort.split(':')
-    const [key, value] = splitSort
-    sortObj[key] = (direction[value] || direction.desc)
   }
 
   if (custom_fields) {
@@ -172,6 +199,7 @@ ProductSchema.statics.findProducts = async ({
     })
   }
 
+  console.log('query', query)
   const product = new Product()
   const products = await product
     .aggregate([
@@ -262,6 +290,12 @@ ProductSchema.statics.findProduct = async (id) => {
           localField: 'reviews',
           foreignField: '_id',
           as: 'reviews'
+        }
+      },
+      {
+        $addFields: {
+          reviews_rating_average: { $ifNull: [{ $avg: '$reviews.rating' }, 0] },
+          reviews_count: { $size: '$reviews' }
         }
       }
     ])

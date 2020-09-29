@@ -11,6 +11,7 @@ const getProducts = async (req, res) => {
     const query = req.query
     const page = parseInt(query.page) || 1
     const limit = parseInt(query.limit) || 20
+    const filter = query && query.filter
     const keyword = query && query.keyword
     const categories = query && query.categories
     const status = query && query.status
@@ -26,6 +27,7 @@ const getProducts = async (req, res) => {
       .findProducts({
         page,
         limit,
+        filter,
         keyword,
         categories,
         status,

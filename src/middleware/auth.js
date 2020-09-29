@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const errorHandler = require('../utils/errorHandler')
 const Customer = require('../models/customer/model')
-const { createNamespace } = require('continuation-local-storage')
+const { createNamespace } = require('cls-hooked')
 const session = createNamespace('session')
 
 const setSession = (storeHash, customerId, req, res, next) => {

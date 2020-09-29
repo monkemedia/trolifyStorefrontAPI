@@ -1,5 +1,4 @@
 const ProductReview = require('../../../models/product/reviews/index.js')
-const Product = require('../../../models/product')
 
 const createProductReview = async (req, res) => {
   const data = req.body
@@ -8,6 +7,8 @@ const createProductReview = async (req, res) => {
     title
   } = data
   const productId = req.params.productId
+
+  delete data.status // delete status just incase
 
   if (!type) {
     return res.status(401).send({
@@ -30,16 +31,10 @@ const createProductReview = async (req, res) => {
   try {
     const productReview = new ProductReview()({
       product_id: productId,
+      status: 'pending',
       ...data
     })
     await productReview.save()
-
-    await Product().updateOne({ _id: productId }, {
-      $push: {
-        reviews: productReview._id
-      },
-      updated_at: Date.now()
-    })
 
     res.status(201).send(productReview)
   } catch (err) {
@@ -73,7 +68,7 @@ const getProductReviews = async (req, res) => {
 const getProductReview = async (req, res) => {
   const reviewId = req.params.reviewId
   const productId = req.params.productId
-  const productReview = await ProductReview().findOne({ _id: reviewId, product_id: productId })
+  const productReview = await ProductReview().findOne({ _id: reviewId, product_id: productId, status: 'approved' })
 
   res.status(200).send(productReview)
 }

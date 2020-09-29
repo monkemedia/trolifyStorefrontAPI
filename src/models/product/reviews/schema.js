@@ -14,7 +14,8 @@ const ProductFieldSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ['approved', 'disapproved', 'pending']
+    enum: ['approved', 'disapproved', 'pending'],
+    default: 'approved'
   },
   rating: {
     type: Number,

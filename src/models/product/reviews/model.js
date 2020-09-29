@@ -4,7 +4,9 @@ const { tenantModel } = require('../../../utils/multitenancy')
 
 // Get product reviews
 ProductReviewSchema.statics.findProductReviews = async ({ page, limit, productId }) => {
-  const query = {}
+  const query = {
+    status: 'approved'
+  }
 
   if (productId) {
     Object.assign(query, { product_id: productId })
