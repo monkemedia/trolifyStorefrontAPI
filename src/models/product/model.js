@@ -9,6 +9,8 @@ function checkType (value) {
     return true
   } else if (!isNaN(value)) {
     return parseInt(value)
+  } else {
+    return value
   }
 }
 
@@ -19,7 +21,6 @@ ProductSchema.statics.findProducts = async ({
   keyword,
   filter,
   categories,
-  status,
   sort,
   custom_fields,
   options
@@ -30,7 +31,7 @@ ProductSchema.statics.findProducts = async ({
   }
   const query = {
     status: {
-      $eq: status || 'live'
+      $eq: 'live'
     }
   }
   const sortObj = {
@@ -165,8 +166,6 @@ ProductSchema.statics.findProducts = async ({
     })
   }
 
-  console.log('query', query)
-  console.log('sort', sortObj)
   const product = new Product()
   const products = await product
     .aggregate([

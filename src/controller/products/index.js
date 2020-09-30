@@ -14,15 +14,9 @@ const getProducts = async (req, res) => {
     const filter = query && query.filter
     const keyword = query && query.keyword
     const categories = query && query.categories
-    const status = query && query.status
-    const is_featured = query && query.is_featured
-    const has_free_shipping = query && query.has_free_shipping
-    const brand_id = query && query.brand_id
     const sort = query && query.sort
-    const price = query && query.price
     const custom_fields = query && query.custom_fields
     const options = query && query.options
-    const rating = query && query.rating
     const products = await Product()
       .findProducts({
         page,
@@ -30,15 +24,9 @@ const getProducts = async (req, res) => {
         filter,
         keyword,
         categories,
-        status,
-        is_featured,
-        has_free_shipping,
-        brand_id,
         sort,
-        price,
         custom_fields,
-        options,
-        rating
+        options
       })
 
     res.status(200).send(products)
