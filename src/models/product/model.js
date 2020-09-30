@@ -2,6 +2,16 @@ const mongoose = require('mongoose')
 const ProductSchema = require('./schema')
 const { tenantModel } = require('../../utils/multitenancy')
 
+function checkType (value) {
+  if (value === 'false') {
+    return false
+  } else if (value === 'true') {
+    return true
+  } else if (!isNaN(value)) {
+    return parseInt(value)
+  }
+}
+
 // Get all products
 ProductSchema.statics.findProducts = async ({
   page,
@@ -10,14 +20,9 @@ ProductSchema.statics.findProducts = async ({
   filter,
   categories,
   status,
-  is_featured,
-  has_free_shipping,
   sort,
-  price,
-  brand_id,
   custom_fields,
-  options,
-  rating
+  options
 }) => {
   const direction = {
     desc: -1,
@@ -41,24 +46,44 @@ ProductSchema.statics.findProducts = async ({
           }
         })
       })
-    } else {
-      console.log('filter', filter)
-      Object.keys(filter.reviews_rating_sum).map(key => {
-        Object.assign(query, {
-          reviews_rating_sum: {
-            [key]: parseInt(filter.reviews_rating_sum[key])
+    } else if (filter.price) {
+      const priceObj = {}
+      Object.keys(filter.price).map(key => {
+        priceObj[key] = checkType(filter.price[key])
+      })
+      Object.assign(query, {
+        $or: [
+          {
+            on_sale: true,
+            $and: [{
+              sale_price: priceObj
+            }]
+          },
+          {
+            on_sale: false,
+            $and: [{
+              price: priceObj
+            }]
           }
+        ]
+      })
+    } else {
+      const obj = {}
+      Object.keys(filter).map(value => {
+        obj[value] = {}
+        Object.keys(filter[value]).map(key => {
+          obj[value][key] = checkType(filter[value][key])
         })
       })
+      Object.assign(query, obj)
     }
   }
 
   if (sort) {
     delete sortObj.created_at
     Object.keys(sort).map(key => {
-      const direction = sort[key] === 'asc' ? 1 : -1
       Object.assign(sortObj, {
-        [key]: direction
+        [key]: direction[sort[key]]
       })
     })
   }
@@ -79,20 +104,6 @@ ProductSchema.statics.findProducts = async ({
         { description: { $regex: keyword, $options: 'i' } },
         { search_keywords: { $regex: keyword, $options: 'i' } }
       ]
-    })
-  }
-
-  if (is_featured) {
-    Object.assign(query, { is_featured: (is_featured === 'true') })
-  }
-
-  if (has_free_shipping) {
-    Object.assign(query, { has_free_shipping: (has_free_shipping === 'true') })
-  }
-
-  if (brand_id) {
-    Object.assign(query, {
-      'brand_id.name': brand_id
     })
   }
 
@@ -154,58 +165,11 @@ ProductSchema.statics.findProducts = async ({
     })
   }
 
-  if (price) {
-    const priceObj = {}
-    const priceArray = [].concat(price)
-
-    priceArray.map(p => {
-      const splitPrice = p.split(':')
-      const [key, value] = splitPrice
-      const greaterLessThan = key === 'min' ? '$gte' : '$lte'
-      priceObj[greaterLessThan] = Number(value)
-    })
-
-    Object.assign(query, {
-      $or: [
-        {
-          on_sale: 'true',
-          $and: [{
-            sale_price: priceObj
-          }]
-        },
-        {
-          on_sale: false,
-          $and: [{
-            price: priceObj
-          }]
-        }
-      ]
-    })
-  }
-
-  if (rating) {
-    const ratingObj = {}
-    const ratingArray = [].concat(rating)
-
-    ratingArray.map(p => {
-      const splitRatings = p.split(':')
-      const [key, value] = splitRatings
-      const greaterLessThan = key === 'min' ? '$gte' : '$lte'
-      ratingObj[greaterLessThan] = Number(value)
-    })
-
-    Object.assign(query, {
-      reviews_rating_sum: ratingObj
-    })
-  }
-
   console.log('query', query)
+  console.log('sort', sortObj)
   const product = new Product()
   const products = await product
     .aggregate([
-      {
-        $match: query
-      },
       {
         $lookup: {
           from: 'productimages',
@@ -235,6 +199,9 @@ ProductSchema.statics.findProducts = async ({
           reviews_rating_average: { $ifNull: [{ $avg: '$reviews.rating' }, 0] },
           reviews_count: { $size: '$reviews' }
         }
+      },
+      {
+        $match: query
       },
       { $skip: (page - 1) * limit },
       { $limit: limit },
