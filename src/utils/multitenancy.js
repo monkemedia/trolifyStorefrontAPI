@@ -27,7 +27,7 @@ const getTenantDB = function getConnections (storeHash, modelName, schema) {
   return mongoose
 }
 
-exports.tenantModel = function (modelName, schema, hash) {
+exports.tenantModel = (modelName, schema, hash) => {
   const session = cls.getNamespace('session')
   const storeHash = hash || session.get('store_hash')
   const tenantDb = getTenantDB(storeHash, modelName, schema)

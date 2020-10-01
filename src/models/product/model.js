@@ -1,18 +1,7 @@
 const mongoose = require('mongoose')
 const ProductSchema = require('./schema')
 const { tenantModel } = require('../../utils/multitenancy')
-
-function checkType (value) {
-  if (value === 'false') {
-    return false
-  } else if (value === 'true') {
-    return true
-  } else if (!isNaN(value)) {
-    return parseInt(value)
-  } else {
-    return value
-  }
-}
+const { checkType, priceQuery } = require('../../utils/helpers')
 
 // Get all products
 ProductSchema.statics.findProducts = async ({
@@ -25,7 +14,7 @@ ProductSchema.statics.findProducts = async ({
   custom_fields,
   options
 }) => {
-  const direction = {
+  const DIRECTION = {
     desc: -1,
     asc: 1
   }
@@ -35,47 +24,21 @@ ProductSchema.statics.findProducts = async ({
     }
   }
   const sortObj = {
-    created_at: direction.desc
+    created_at: DIRECTION.desc
   }
 
   if (filter) {
-    if (filter.brand_id) {
-      Object.keys(filter.brand_id).map(key => {
-        Object.assign(query, {
-          brand_id: {
-            [key]: mongoose.Types.ObjectId(filter.brand_id[key])
-          }
-        })
+    const obj = {}
+    Object.keys(filter).map(key => {
+      obj[key] = {}
+      Object.keys(filter[key]).map(operator => {
+        obj[key][operator] = checkType(filter[key][operator], key)
       })
-    } else if (filter.price) {
-      const priceObj = {}
-      Object.keys(filter.price).map(key => {
-        priceObj[key] = checkType(filter.price[key])
-      })
-      Object.assign(query, {
-        $or: [
-          {
-            on_sale: true,
-            $and: [{
-              sale_price: priceObj
-            }]
-          },
-          {
-            on_sale: false,
-            $and: [{
-              price: priceObj
-            }]
-          }
-        ]
-      })
+    })
+
+    if (filter.price) {
+      Object.assign(query, priceQuery(obj))
     } else {
-      const obj = {}
-      Object.keys(filter).map(value => {
-        obj[value] = {}
-        Object.keys(filter[value]).map(key => {
-          obj[value][key] = checkType(filter[value][key])
-        })
-      })
       Object.assign(query, obj)
     }
   }
@@ -84,7 +47,7 @@ ProductSchema.statics.findProducts = async ({
     delete sortObj.created_at
     Object.keys(sort).map(key => {
       Object.assign(sortObj, {
-        [key]: direction[sort[key]]
+        [key]: DIRECTION[sort[key]]
       })
     })
   }
@@ -166,6 +129,8 @@ ProductSchema.statics.findProducts = async ({
     })
   }
 
+  console.log('query', query)
+
   const product = new Product()
   const products = await product
     .aggregate([
@@ -210,6 +175,7 @@ ProductSchema.statics.findProducts = async ({
   const total = await product
     .find(query)
     .countDocuments()
+
   return {
     data: products,
     meta: {
